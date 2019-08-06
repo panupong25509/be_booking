@@ -9,5 +9,5 @@ func main() {
 	db.Init()
 	e := route.Init()
 
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(":3001"))
 }

@@ -1,23 +1,24 @@
 package model
 
-import uuid "github.com/satori/go.uuid"
+import (
+	"time"
 
-// type User struct {
-// 	ID           uuid.UUID `gorm:"type:uuid;primary_key;"`
-// 	Username     string    `gorm:"type:varchar(255)"`
-// 	Password     string    `gorm:"type:varchar(255)"`
-// 	Fname        string    `gorm:"type:varchar(255)"`
-// 	Lname        string    `gorm:"type:varchar(255)"`
-// 	Organization string    `gorm:"type:varchar(255)"`
-// 	Email        string    `gorm:"type:varchar(255)"`
-// 	Role         string    `gorm:"type:varchar(255)"`
-// }
+	uuid "github.com/satori/go.uuid"
+)
+
+func (u User) TableName() string {
+	return "users"
+}
 
 type User struct {
-	ID uuid.UUID
-	// Id        uint   `gorm:"primary_key" json:"id"`
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	Age       int    `json:"age"`
-	Email     string
+	ID           uuid.UUID `json:"id" db:"id"`
+	Username     string    `json:"username" db:"username"`
+	Password     string    `json:"password" db:"password"`
+	Fname        string    `json:"fname" db:"fname"`
+	Lname        string    `json:"lname" db:"lname"`
+	Organization string    `json:"organization" db:"organization"`
+	Email        string    `json:"email" db:"email"`
+	Role         string    `json:"role" db:"role"`
+	CreatedAt    time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at" db:"updated_at"`
 }

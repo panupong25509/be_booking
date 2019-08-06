@@ -10,8 +10,14 @@ import (
 
 func GetUsers(c echo.Context) error {
 	db := db.DbManager()
-	users := []model.User{}
-	db.Find(&users)
+	users := model.User{
+		FirstName: "supaiwit",
+		LastName:  "SDASD",
+		Age:       20,
+		Email:     "sacxsadsa@gmail.com",
+	}
+	db.NewRecord(users)
+	db.Create(&users)
 	// spew.Dump(json.Marshal(users))
 	// return c.JSON(http.StatusOK, users)
 	return c.JSON(http.StatusOK, users)
