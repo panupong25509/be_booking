@@ -1,7 +1,6 @@
 package db
 
 import (
-	"github.com/JewlyTwin/echo-restful-api/model"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
@@ -16,7 +15,7 @@ func Init() {
 	if err != nil {
 		panic("DB Connection Error")
 	}
-	db.AutoMigrate(&model.User{})
+	// db.AutoMigrate(&model.User{})
 
 }
 

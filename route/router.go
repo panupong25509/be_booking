@@ -8,8 +8,6 @@ import (
 func Init() *echo.Echo {
 	e := echo.New()
 
-	// e.GET("/", api.Home)
-
-	e.GET("/users", api.GetUsers)
+	e.GET("/", api.GetUsers)
 	return e
 }
