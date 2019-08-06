@@ -1,0 +1,8 @@
+development:
+  dialect: mysql
+  datasource: PiOwrb3U68:jg5xygPrLx@tcp(remotemysql.com:3306)/PiOwrb3U68?parseTime=true
+  dir: migrations
+test:
+  dialect: mysql
+  datasource: root:pass@tcp(localhost:3306)/report
+  dir: migrations
