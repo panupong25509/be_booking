@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo"
-	"github.com/panupong25509/be_booking_sign2/action/repositories"
+	"github.com/panupong25509/be_booking_sign/action/repositories"
 )
 
 func GetUsers(c echo.Context) error {

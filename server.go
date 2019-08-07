@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/panupong25509/be_booking_sign2/db"
-	"github.com/panupong25509/be_booking_sign2/route"
+	"github.com/panupong25509/be_booking_sign/db"
+	"github.com/panupong25509/be_booking_sign/route"
 )
 
 func main() {
