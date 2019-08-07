@@ -1,8 +1,8 @@
 package route
 
 import (
-	api "github.com/JewlyTwin/echo-restful-api/action"
 	"github.com/labstack/echo"
+	api "github.com/panupong25509/be_booking_sign2/action"
 )
 
 func Init() *echo.Echo {

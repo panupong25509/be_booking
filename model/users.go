@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/gofrs/uuid"
 )
 
 func (u User) TableName() string {

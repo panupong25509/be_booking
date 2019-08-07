@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/JewlyTwin/echo-restful-api/db"
-	"github.com/JewlyTwin/echo-restful-api/route"
+	"github.com/panupong25509/be_booking_sign2/db"
+	"github.com/panupong25509/be_booking_sign2/route"
 )
 
 func main() {
