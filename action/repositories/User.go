@@ -98,7 +98,7 @@ func GetUserById(c echo.Context) (interface{}, interface{}) {
 func GetUserByIduuid(c echo.Context, id uuid.UUID) (interface{}, interface{}) {
 	db := db.DbManager()
 	user := models.User{}
-	err = db.Find(&user, id)
+	err := db.Find(&user, id)
 	if err != nil {
 		return nil, models.Error{400, "ไม่มีผู้ใช้นี้ใน"}
 	}

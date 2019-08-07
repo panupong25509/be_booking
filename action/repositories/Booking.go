@@ -94,7 +94,7 @@ func RejectBooking(c echo.Context, data map[string]interface{}) (interface{}, in
 	if err != nil {
 		return nil, err
 	}
-	tokens, err := DecodeJWT(jwtReq.(string), "bookingsign")
+	tokens, err := DecodeJWT(jwtReq.(string))
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +129,7 @@ func ApproveBooking(c echo.Context, data map[string]interface{}) (interface{}, i
 	if err != nil {
 		return nil, err
 	}
-	tokens, err := DecodeJWT(jwtReq.(string), "bookingsign")
+	tokens, err := DecodeJWT(jwtReq.(string))
 	if err != nil {
 		return nil, err
 	}
@@ -186,7 +186,7 @@ func GetPaginateAdmin(page string, c echo.Context) (interface{}, interface{}) {
 	if err != nil {
 		return nil, err
 	}
-	tokens, err := DecodeJWT(jwtReq.(string), "bookingsign")
+	tokens, err := DecodeJWT(jwtReq.(string))
 	if err != nil {
 		return nil, err
 	}
