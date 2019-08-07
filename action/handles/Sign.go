@@ -17,23 +17,22 @@ func AddSign(c echo.Context) error {
 }
 
 func GetAllSign(c echo.Context) error {
-	data := DynamicPostForm(c)
-	success, err := repositories.GetAllSign(c, data)
+	signs, err := repositories.GetAllSign(c)
 	if err != nil {
 		status := err.(models.Error)
 		return c.JSON(status.Code, status)
 	}
-	return c.JSON(200, success)
+	return c.JSON(200, signs)
 }
 
 func GetSignByID(c echo.Context) error {
 	data := DynamicPostForm(c)
-	success, err := repositories.GetSignByID(c, data)
+	sign, err := repositories.GetSignByID(c, data)
 	if err != nil {
 		status := err.(models.Error)
 		return c.JSON(status.Code, status)
 	}
-	return c.JSON(200, success)
+	return c.JSON(200, sign)
 }
 
 func GetSignByName(c echo.Context) error {

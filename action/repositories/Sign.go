@@ -5,9 +5,10 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/labstack/echo"
 	"github.com/panupong25509/be_booking_sign/db"
 	"github.com/panupong25509/be_booking_sign/models"
+
+	"github.com/labstack/echo"
 )
 
 func AddSign(c echo.Context, data map[string]interface{}) (interface{}, interface{}) {
@@ -33,15 +34,25 @@ func AddSign(c echo.Context, data map[string]interface{}) (interface{}, interfac
 }
 
 func GetAllSign(c echo.Context) (interface{}, interface{}) {
-
+	db := db.DbManager()
+	signs := []models.Sign{}
+	db.Find(&signs)
+	return signs, nil
 }
 
-func GetSignByID(c echo.Context) (interface{}, interface{}) {
-
+func GetSignByID(c echo.Context, data map[string]interface{}) (interface{}, interface{}) {
+	db := db.DbManager()
+	sign := models.Sign{}
+	// if data["id"]
+	db.First(&sign, data["id"])
+	return sign, nil
 }
 
-func GetSignByName(c echo.Context) (interface{}, interface{}) {
-
+func GetSignByName(c echo.Context, data map[string]interface{}) (interface{}, interface{}) {
+	db := db.DbManager()
+	sign := models.Sign{}
+	db.Where("sign_name = ?", data["signname"]).First(&sign)
+	return sign, nil
 }
 
 func DeleteSign(c echo.Context, data map[string]interface{}) (interface{}, interface{}) {
@@ -68,7 +79,7 @@ func UpdateSign(c echo.Context, data map[string]interface{}) (interface{}, inter
 		return nil, err
 	}
 	sign.CreateSignModel(data, file.(string))
-	oldSign, err := GetSignById(c, sign.ID)
+	oldSign, err := GetSignByID(c, data)
 	if err != nil {
 		return nil, err
 	}
