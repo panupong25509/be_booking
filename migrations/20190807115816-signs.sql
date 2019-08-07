@@ -7,8 +7,8 @@ CREATE TABLE IF NOT EXISTS signs (
     limitdate       VARCHAR(255)                NOT NULL,
     beforebooking   VARCHAR(255)                NOT NULL,
     picture         VARCHAR(255)                NOT NULL,
-    create_at       TIMESTAMP                    NOT NULL,
-    update_at       TIMESTAMP                    NOT NULL,
+    created_at       TIMESTAMP                    NOT NULL,
+    updated_at       TIMESTAMP                    NOT NULL,
     PRIMARY KEY (id)
 );
 -- +migrate Down

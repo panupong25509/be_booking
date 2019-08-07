@@ -10,8 +10,8 @@ CREATE TABLE IF NOT EXISTS bookings (
     applicant_id    VARCHAR(36)        NOT NULL REFERENCES users(id),
     status          VARCHAR(255)       NOT NULL,
     comment         VARCHAR(255)       NOT NULL,
-    create_at       TIMESTAMP           NOT NULL,
-    update_at       TIMESTAMP           NOT NULL,
+    created_at       TIMESTAMP           NOT NULL,
+    updated_at       TIMESTAMP           NOT NULL,
     PRIMARY KEY (id)
 );
 -- +migrate Down
