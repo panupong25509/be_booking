@@ -6,5 +6,7 @@
     "DB_PORT": "5432",
     "DB_HOST": "103.86.49.57",
     "DB_NAME": "practice",
-    "SECRET" : "bookingsign"
+    "SECRET" : "bookingsign",
+    "MAIL_EMAIL" : "",
+    "MAIL_PASSWORD" : ""
 }
