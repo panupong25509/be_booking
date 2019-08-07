@@ -13,5 +13,9 @@ func Init() *echo.Echo {
 	e.POST("/register", api.Register)
 	e.GET("/user", api.GetUserById)
 	e.POST("/upload", api.Upload)
+	e.POST("/deletesign", api.DeleteSign)
+	e.POST("/updatesign", api.UpdateSign)
+	e.POST("/addsign", api.AddSign)
+
 	return e
 }
