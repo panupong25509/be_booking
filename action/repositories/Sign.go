@@ -7,8 +7,26 @@ import (
 	"github.com/labstack/echo"
 )
 
-func AddSign(c, data) error {
+func AddSign(c echo.Context, data) error {
 
+}
+
+func GetAllSign(c echo.Context) (interface{}, interface{}) {
+	
+}
+
+func GetSignByID(c echo.Context) (interface{}, interface{}) {
+	
+}
+
+func GetSignByName(c echo.Context) (interface{}, interface{}) {
+	
+}
+func DeleteSign(c echo.Context) (interface{}, interface{}) {
+	
+}
+func UpdateSign(c echo.Context) (interface{}, interface{}) {
+	
 }
 
 func Upload(c echo.Context) error {
