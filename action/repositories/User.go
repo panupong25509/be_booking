@@ -93,3 +93,17 @@ func GetUserById(c echo.Context) (interface{}, interface{}) {
 	}
 	return user, nil
 }
+
+// fileBytes, err := ioutil.ReadAll(f)
+// tempFile.Write(fileBytes)
+// in, err := os.Open(tempFile.Name())
+// defer in.Close()
+// _, file := filepath.Split(tempFile.Name())
+// out, err := os.Create(`D:\fe_booking_sign\public\img\` + file)
+// if _, err = io.Copy(out, in); err != nil {
+// 	log.Print(err)
+// 	return nil, models.Error{500, "can't add sign"}
+// }
+// return file, nil
+
+// }
