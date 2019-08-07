@@ -6,16 +6,6 @@ import (
 	"github.com/panupong25509/be_booking_sign/models"
 )
 
-func Register(c echo.Context) error {
-	data := DynamicPostForm(c)
-	success, err := repositories.Register(c, data)
-	if err != nil {
-		status := err.(models.Error)
-		return c.JSON(status.Code, status)
-	}
-	return c.JSON(200, success)
-}
-
 func AddBooking(c echo.Context) error {
 	data := DynamicPostForm(c)
 	newBooking, err := repositories.AddBooking(c, data)
@@ -68,22 +58,22 @@ func RejectBooking(c echo.Context) error {
 }
 
 func GetPaginateAdmin(c echo.Context) error {
-	page := c.Param("page")
-	booking, err := repositories.GetPaginateAdmin(page, c)
-	if err != nil {
-		status := err.(models.Error)
-		return c.JSON(status.Code, status)
-	}
+	// page := c.Param("page")
+	booking := repositories.GetPaginateAdmin(c)
+	// if err != nil {
+	// 	status := err.(models.Error)
+	// 	return c.JSON(status.Code, status)
+	// }
 	return c.JSON(200, booking)
 }
 
-func GetPaginateUser(c echo.Context) error {
-	page := c.Param("page")
-	order := c.Param("order")
-	allBooking, err := repositories.GetPaginateUser(page, order, c)
-	if err != nil {
-		status := err.(models.Error)
-		return c.JSON(status.Code, status)
-	}
-	return c.JSON(200, allBooking)
-}
+// func GetPaginateUser(c echo.Context) error {
+// 	page := c.Param("page")
+// 	order := c.Param("order")
+// 	allBooking, err := repositories.GetPaginateUser(page, order, c)
+// 	if err != nil {
+// 		status := err.(models.Error)
+// 		return c.JSON(status.Code, status)
+// 	}
+// 	return c.JSON(200, allBooking)
+// }

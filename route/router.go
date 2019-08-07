@@ -19,13 +19,13 @@ func Init() *echo.Echo {
 	e.POST("/updatesign", api.UpdateSign)
 	e.POST("/addsign", api.AddSign)
 	e.GET("/allsign", api.GetAllSign)
-	e.GET("/booking/{page}/{order}", api.GetPaginateUser)
-	e.GET("/sign/{id}", api.GetSignById)
+	// e.GET("/booking/{page}/{order}", api.GetPaginateUser)
+	// e.GET("/sign/{id}", api.GetSignById)
 	//Booking
 	e.POST("/addbooking", api.AddBooking)
 	e.GET("/getbookingdays/{id}", api.GetBookingDayBySign)
 	//admin
-	e.GET("/admin/booking/{page}", api.GetPaginateAdmin)
+	e.GET("/admin/booking", api.GetPaginateAdmin)
 	e.POST("/admin/booking/approve", api.ApproveBooking)
 	e.POST("/admin/booking/reject", api.RejectBooking)
 
