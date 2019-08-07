@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"github.com/panupong25509/be_booking_sign/models"
+	"github.com/panupong25509/be_booking_sign/db"
 	"io"
 	"os"
 
@@ -12,11 +14,17 @@ func AddSign(c echo.Context, data) error {
 }
 
 func GetAllSign(c echo.Context) (interface{}, interface{}) {
-	
+	db := db.DbManager()
+	signs := []models.Sign{}
+	db.Find(&signs)
+	return signs, nil
 }
 
-func GetSignByID(c echo.Context) (interface{}, interface{}) {
-	
+func GetSignByID(c echo.Context, data map[string]interface{}) (interface{}, interface{}) {
+	db := db.DbManager()
+	sign := models.Sign{}
+	db.First(&sign, data["id"])
+	return sign, nil
 }
 
 func GetSignByName(c echo.Context) (interface{}, interface{}) {
