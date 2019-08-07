@@ -10,5 +10,6 @@ func Init() *echo.Echo {
 
 	// e.GET("/", api.GetUsers)
 	e.POST("/login", api.Login)
+	e.POST("/register", api.Register)
 	return e
 }
