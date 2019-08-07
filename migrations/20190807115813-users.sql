@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS users (
     organization    VARCHAR(255)                NOT NULL,
     email           VARCHAR(255)                NOT NULL,
     role            VARCHAR(255)                NOT NULL,
-    create_at       datetime                    NOT NULL,
-    update_at       datetime                    NOT NULL,
+    create_at       TIMESTAMP                    NOT NULL,
+    update_at       TIMESTAMP                    NOT NULL,
     PRIMARY KEY (id)
 );
 -- +migrate Down
