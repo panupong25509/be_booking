@@ -4,6 +4,8 @@ import (
 	"log"
 	"strings"
 
+	"github.com/labstack/echo"
+
 	"github.com/panupong25509/be_booking_sign/config"
 
 	jwt "github.com/dgrijalva/jwt-go"
@@ -15,6 +17,14 @@ type Token struct {
 	UserID uuid.UUID
 	Role   string
 	jwt.StandardClaims
+}
+
+func GetJWT(c echo.Context) (interface{}, interface{}) {
+	jwtReq := c.Request().Header.Get("Authorization")
+	if jwtReq == "" {
+		return nil, models.Error{400, "Not have jwt"}
+	}
+	return jwtReq, nil
 }
 
 func EncodeJWT(user models.User) string {

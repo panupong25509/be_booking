@@ -48,11 +48,11 @@ func Login(c echo.Context, data map[string]interface{}) (interface{}, interface{
 	}
 	user := models.User{}
 	db.Where("username = (?)", username).Find(&user)
-	if CheckPasswordHash(BytesToString(hashBytes), user.Password) {
-		jwt := EncodeJWT(user)
-		return models.JWT{jwt}, nil
+	if !CheckPasswordHash(BytesToString(hashBytes), user.Password) {
+		return nil, models.Error{400, "username or password incorrect"}
 	}
-	return nil, models.Error{400, "username or password incorrect"}
+	jwt := EncodeJWT(user)
+	return models.JWT{jwt}, nil
 }
 
 func BytesToString(b []byte) string {
@@ -73,7 +73,7 @@ func GetUserByUsername(c echo.Context, data map[string]interface{}) (interface{}
 	}
 	username := data["username"].(string)
 	user := models.Users{}
-	db.First(&user, "username = (?)", username)
+	db.Where("username = (?)", username).First(&user)
 	if len(user) == 0 {
 		return nil, models.Error{400, "ไม่มี username"}
 	}
@@ -81,17 +81,17 @@ func GetUserByUsername(c echo.Context, data map[string]interface{}) (interface{}
 }
 
 func GetUserById(c echo.Context) (interface{}, interface{}) {
-	jwtReq := c.Request().Header.Get("Authorization")
-	tokens, err := DecodeJWT(jwtReq)
+	jwtReq, err := GetJWT(c)
+	if err != nil {
+		return nil, err
+	}
+	tokens, err := DecodeJWT(jwtReq.(string))
 	if err != nil {
 		return nil, err
 	}
 	db := db.DbManager()
 	user := models.User{}
-	err = db.Find(&user, tokens["UserID"])
-	if err != nil {
-		return nil, models.Error{400, "ไม่มีผู้ใช้นี้ใน database"}
-	}
+	db.Find(&user, tokens["UserID"])
 	return user, nil
 }
 
