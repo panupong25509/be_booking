@@ -48,8 +48,7 @@ func Login(c echo.Context, data map[string]interface{}) (interface{}, interface{
 	user := models.User{}
 	db.Where("username = (?)", username).Find(&user)
 	if CheckPasswordHash(BytesToString(hashBytes), user.Password) {
-		var secret = "bookingsign"
-		jwt := EncodeJWT(user, secret)
+		jwt := EncodeJWT(user)
 		return models.JWT{jwt}, nil
 	}
 	return nil, models.Error{400, "username or password incorrect"}
@@ -82,7 +81,7 @@ func GetUserByUsername(c echo.Context, data map[string]interface{}) (interface{}
 
 func GetUserById(c echo.Context) (interface{}, interface{}) {
 	jwtReq := c.Request().Header.Get("Authorization")
-	tokens, err := DecodeJWT(jwtReq, "bookingsign")
+	tokens, err := DecodeJWT(jwtReq)
 	if err != nil {
 		return nil, err
 	}
