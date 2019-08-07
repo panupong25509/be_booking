@@ -10,7 +10,7 @@ var err error
 
 func Init() {
 
-	db, err = gorm.Open("mysql", "PiOwrb3U68:jg5xygPrLx@tcp(remotemysql.com:3306)/PiOwrb3U68")
+	db, err = gorm.Open("postgres", "postgres://postgres:postgres@103.86.49.57:5432/practice?sslmode=disable")
 	// defer db.Close()
 	if err != nil {
 		panic("DB Connection Error")
