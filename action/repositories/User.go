@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"encoding/base64"
+	"log"
 	"reflect"
 	"unsafe"
 
@@ -34,8 +35,10 @@ func Register(c echo.Context, data map[string]interface{}) (interface{}, interfa
 
 func Login(c echo.Context, data map[string]interface{}) (interface{}, interface{}) {
 	db := db.DbManager()
-	username := data["username"].(string)
-	password := data["password"].(string)
+	username := c.FormValue("username")
+	password := c.FormValue("password")
+	log.Print("username", username)
+	log.Print("password", password)
 	if username == "" {
 		return nil, models.Error{400, "ไม่มี username"}
 	}
