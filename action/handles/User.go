@@ -1,23 +1,10 @@
 package handles
 
 import (
-	"io"
-	"os"
-
 	"github.com/labstack/echo"
 	"github.com/panupong25509/be_booking_sign/action/repositories"
 	"github.com/panupong25509/be_booking_sign/models"
 )
-
-// func Register(c echo.Context) error {
-// 	data := DynamicPostForm(c)
-// 	success, err := repositories.Register(c, data)
-// 	if err != nil {
-// 		status := err.(models.Error)
-// 		// return c.Render(status.Code, r.JSON(status))
-// 	}
-// 	// return c.Render(200, r.JSON(success))
-// }
 
 func Login(c echo.Context) error {
 	data := DynamicPostForm(c)
@@ -36,7 +23,6 @@ func Register(c echo.Context) error {
 		status := err.(models.Error)
 		return c.JSON(status.Code, status)
 	}
-	// log.Print(success)
 	return c.JSON(200, success)
 }
 
@@ -57,35 +43,4 @@ func GetUserById(c echo.Context) error {
 		return c.JSON(status.Code, status)
 	}
 	return c.JSON(200, success)
-}
-
-func Upload(c echo.Context) error {
-	//-----------
-	// Read file
-	//-----------
-
-	// Source
-	file, err := c.FormFile("file")
-	if err != nil {
-		return err
-	}
-	src, err := file.Open()
-	if err != nil {
-		return err
-	}
-	defer src.Close()
-
-	// Destination
-	dst, err := os.Create(`D:\fe_booking_sign\public\img\` + file.Filename)
-	if err != nil {
-		return err
-	}
-	defer dst.Close()
-
-	// Copy
-	if _, err = io.Copy(dst, src); err != nil {
-		return err
-	}
-
-	return nil
 }
