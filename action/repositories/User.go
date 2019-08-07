@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"unsafe"
 
+	"github.com/gofrs/uuid"
 	"github.com/labstack/echo"
 	"github.com/panupong25509/be_booking_sign/db"
 	"github.com/panupong25509/be_booking_sign/models"
@@ -90,6 +91,16 @@ func GetUserById(c echo.Context) (interface{}, interface{}) {
 	err = db.Find(&user, tokens["UserID"])
 	if err != nil {
 		return nil, models.Error{400, "ไม่มีผู้ใช้นี้ใน database"}
+	}
+	return user, nil
+}
+
+func GetUserByIduuid(c echo.Context, id uuid.UUID) (interface{}, interface{}) {
+	db := db.DbManager()
+	user := models.User{}
+	err = db.Find(&user, id)
+	if err != nil {
+		return nil, models.Error{400, "ไม่มีผู้ใช้นี้ใน"}
 	}
 	return user, nil
 }

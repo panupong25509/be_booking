@@ -9,13 +9,25 @@ func Init() *echo.Echo {
 	e := echo.New()
 
 	e.GET("/", api.Home)
+	//Authentication
 	e.POST("/login", api.Login)
 	e.POST("/register", api.Register)
+	//User
 	e.GET("/user", api.GetUserById)
-	e.POST("/upload", api.Upload)
+	//Sign
 	e.POST("/deletesign", api.DeleteSign)
 	e.POST("/updatesign", api.UpdateSign)
 	e.POST("/addsign", api.AddSign)
+	e.GET("/allsign", api.GetAllSign)
+	e.GET("/booking/{page}/{order}", api.GetPaginateUser)
+	e.GET("/sign/{id}", api.GetSignById)
+	//Booking
+	e.POST("/addbooking", api.AddBooking)
+	e.GET("/getbookingdays/{id}", api.GetBookingDayBySign)
+	//admin
+	e.GET("/admin/booking/{page}", api.GetPaginateAdmin)
+	e.POST("/admin/booking/approve", api.ApproveBooking)
+	e.POST("/admin/booking/reject", api.RejectBooking)
 
 	return e
 }
