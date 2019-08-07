@@ -29,6 +29,15 @@ type Booking struct {
 	UpdatedAt   time.Time `json:"-" db:"updated_at"`
 }
 
+type IDbooking struct {
+	ID int `json:"id"`
+}
+
+func (b *Booking) ReturnJsonID() IDbooking {
+	idbook := IDbooking{b.ID}
+	return idbook
+}
+
 type BookingDay struct {
 	Firstdate time.Time `json:"firstdate"`
 	Lastdate  time.Time `json:"lastdate"`
