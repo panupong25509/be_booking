@@ -8,7 +8,7 @@ import (
 func Init() *echo.Echo {
 	e := echo.New()
 
-	// e.GET("/", api.GetUsers)
+	e.GET("/", api.Home)
 	e.POST("/login", api.Login)
 	e.POST("/register", api.Register)
 	e.GET("/user", api.GetUserById)
