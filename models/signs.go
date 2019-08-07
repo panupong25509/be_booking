@@ -3,6 +3,8 @@ package models
 import (
 	"strconv"
 	"time"
+
+	"github.com/labstack/echo"
 )
 
 func (s Sign) TableName() string {
@@ -21,29 +23,29 @@ type Sign struct {
 	UpdatedAt     time.Time `json:"-" db:"updated_at"`
 }
 
-func (s *Sign) CheckParamPostForm(data map[string]interface{}) bool {
-	if data["signname"] == nil {
+func (s *Sign) CheckParamPostForm(c echo.Context) bool {
+	if c.FormValue("signname") == "" {
 		return false
 	}
-	if data["location"] == nil {
+	if c.FormValue("location") == "" {
 		return false
 	}
-	if data["limitdate"] == nil {
+	if c.FormValue("limitdate") == "" {
 		return false
 	}
-	if data["beforebooking"] == nil {
+	if c.FormValue("beforebooking") == "" {
 		return false
 	}
 	return true
 }
 
-func (s *Sign) CreateSignModel(data map[string]interface{}, namepic string) {
-	if data["id"] != nil {
-		s.ID, _ = strconv.Atoi(data["id"].(string))
+func (s *Sign) CreateSignModel(c echo.Context) {
+	if c.FormValue("id") != "" {
+		s.ID, _ = strconv.Atoi(c.FormValue("id"))
 	}
-	s.Name = data["signname"].(string)
-	s.Location = data["location"].(string)
-	s.Limitdate, _ = strconv.Atoi(data["limitdate"].(string))
-	s.Beforebooking, _ = strconv.Atoi(data["beforebooking"].(string))
-	s.Picture = namepic
+	s.Name = c.FormValue("signname")
+	s.Location = c.FormValue("location")
+	s.Limitdate, _ = strconv.Atoi(c.FormValue("limitdate"))
+	s.Beforebooking, _ = strconv.Atoi(c.FormValue("beforebooking"))
+	s.Picture = c.FormValue("signname")
 }

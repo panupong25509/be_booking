@@ -11,24 +11,21 @@ import (
 	"github.com/labstack/echo"
 )
 
-func AddSign(c echo.Context, data map[string]interface{}) (interface{}, interface{}) {
+func AddSign(c echo.Context) (interface{}, interface{}) {
 	db := db.DbManager()
 	sign := models.Sign{}
-	if !sign.CheckParamPostForm(data) {
+	if !sign.CheckParamPostForm(c) {
 		return nil, models.Error{400, "กรอกข้อมูลไม่ครบ"}
 	}
-	samename, err := GetSignByName(c, data)
+	checkSign, err := GetSignByName(c)
+	if checkSign != nil {
+		return nil, err
+	}
+	_, err = UploadImg(c)
 	if err != nil {
 		return nil, err
 	}
-	if samename != nil {
-		return nil, models.Error{400, "ชื่อป้ายนี้มีอยู่ในระบบแล้ว"}
-	}
-	file, err := UploadImg(c, data["signname"].(string))
-	if err != nil {
-		return nil, err
-	}
-	sign.CreateSignModel(data, file.(string))
+	sign.CreateSignModel(c)
 	db.Create(&sign)
 	return models.Success{200, "success"}, nil
 }
@@ -48,11 +45,14 @@ func GetSignByID(c echo.Context, data map[string]interface{}) (interface{}, inte
 	return sign, nil
 }
 
-func GetSignByName(c echo.Context, data map[string]interface{}) (interface{}, interface{}) {
+func GetSignByName(c echo.Context) (interface{}, interface{}) {
 	db := db.DbManager()
-	sign := models.Sign{}
-	db.Where("sign_name = ?", data["signname"]).First(&sign)
-	return sign, nil
+	signs := []models.Sign{}
+	db.Where("sign_name = ?", c.FormValue("signname")).First(&signs)
+	if len(signs) != 0 {
+		return signs[0], nil
+	}
+	return nil, models.Error{500, "Not have sign"}
 }
 
 func DeleteSign(c echo.Context, data map[string]interface{}) (interface{}, interface{}) {
@@ -71,14 +71,14 @@ func DeleteSign(c echo.Context, data map[string]interface{}) (interface{}, inter
 func UpdateSign(c echo.Context, data map[string]interface{}) (interface{}, interface{}) {
 	db := db.DbManager()
 	sign := models.Sign{}
-	if !sign.CheckParamPostForm(data) {
+	if !sign.CheckParamPostForm(c) {
 		return nil, models.Error{400, "กรอกข้อมูลไม่ครบ"}
 	}
-	file, err := UploadImg(c, data["signname"].(string))
+	_, err := UploadImg(c)
 	if err != nil {
 		return nil, err
 	}
-	sign.CreateSignModel(data, file.(string))
+	sign.CreateSignModel(c)
 	oldSign, err := GetSignByID(c, data)
 	if err != nil {
 		return nil, err
@@ -89,7 +89,7 @@ func UpdateSign(c echo.Context, data map[string]interface{}) (interface{}, inter
 	return models.Success{200, "success"}, nil
 }
 
-func UploadImg(c echo.Context, filename string) (interface{}, interface{}) {
+func UploadImg(c echo.Context) (interface{}, interface{}) {
 	file, err := c.FormFile("file")
 	if err != nil {
 		return err, nil
@@ -99,7 +99,7 @@ func UploadImg(c echo.Context, filename string) (interface{}, interface{}) {
 		return err, nil
 	}
 	defer src.Close()
-	dst, err := os.Create(`D:\fe_booking_sign\public\img\` + filename)
+	dst, err := os.Create(`D:\fe_booking_sign\public\img\` + c.FormValue("signname"))
 	if err != nil {
 		return err, nil
 	}
