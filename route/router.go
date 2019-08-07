@@ -11,5 +11,6 @@ func Init() *echo.Echo {
 	// e.GET("/", api.GetUsers)
 	e.POST("/login", api.Login)
 	e.POST("/register", api.Register)
+	e.GET("/user", api.GetUserById)
 	return e
 }

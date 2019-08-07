@@ -45,3 +45,12 @@ func GetUserByUsername(c echo.Context) error {
 	}
 	return c.JSON(200, success)
 }
+
+func GetUserById(c echo.Context) error {
+	success, err := repositories.GetUserById(c)
+	if err != nil {
+		status := err.(models.Error)
+		return c.JSON(status.Code, status)
+	}
+	return c.JSON(200, success)
+}

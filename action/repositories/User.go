@@ -82,3 +82,18 @@ func GetUserByUsername(c echo.Context, data map[string]interface{}) (interface{}
 	}
 	return user[0], nil
 }
+
+func GetUserById(c echo.Context) (interface{}, interface{}) {
+	jwtReq := c.Request().Header.Get("Authorization")
+	tokens, err := DecodeJWT(jwtReq, "bookingsign")
+	if err != nil {
+		return nil, err
+	}
+	db := db.DbManager()
+	user := models.User{}
+	err = db.Find(&user, tokens["UserID"])
+	if err != nil {
+		return nil, models.Error{400, "ไม่มีผู้ใช้นี้ใน database"}
+	}
+	return user, nil
+}
