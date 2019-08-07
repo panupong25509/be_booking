@@ -1,9 +1,6 @@
 package handles
 
 import (
-	"log"
-	"net/http"
-
 	"github.com/labstack/echo"
 	"github.com/panupong25509/be_booking_sign/action/repositories"
 	"github.com/panupong25509/be_booking_sign/models"
@@ -20,10 +17,13 @@ import (
 // }
 
 func Login(c echo.Context) error {
-	// data := DynamicPostForm(c)
-	// _, _ := repositories.Login(c, data)
-	log.Print("login")
-	return c.JSON(http.StatusOK, "users")
+	data := DynamicPostForm(c)
+	jwt, err := repositories.Login(c, data)
+	if err != nil {
+		status := err.(models.Error)
+		return c.JSON(status.Code, status.Message)
+	}
+	return c.JSON(200, jwt)
 }
 
 func Register(c echo.Context) error {
@@ -33,6 +33,7 @@ func Register(c echo.Context) error {
 		status := err.(models.Error)
 		return c.JSON(status.Code, status)
 	}
+	// log.Print(success)
 	return c.JSON(200, success)
 }
 

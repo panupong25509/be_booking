@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"encoding/base64"
 	"reflect"
 	"unsafe"
 
@@ -26,12 +27,8 @@ func Register(c echo.Context, data map[string]interface{}) (interface{}, interfa
 	}
 	_ = user.CreateModel(data, string(hash))
 	db.NewRecord(user)
-	err = db.Create(&user)
-	if err != nil {
-		return nil, err
-	}
-	success := models.Success{"success"}
-	return success, nil
+	db.Create(&user)
+	return models.Success{200, "success"}, nil
 }
 
 func Login(c echo.Context, data map[string]interface{}) (interface{}, interface{}) {
@@ -44,17 +41,17 @@ func Login(c echo.Context, data map[string]interface{}) (interface{}, interface{
 	if password == "" {
 		return nil, models.Error{400, "ไม่มี password"}
 	}
-	// hashBytes, err := base64.StdEncoding.DecodeString(password)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	hashBytes, err := base64.StdEncoding.DecodeString(password)
+	if err != nil {
+		return nil, err
+	}
 	user := models.User{}
-	_ = db.Where("username = (?)", username).Find(&user)
-	// if CheckPasswordHash(BytesToString(hashBytes), user.Password) {
-	// 	var secret = "bookingsign"
-	// 	jwt := EncodeJWT(user[0], secret)
-	// 	return jwt, nil
-	// }
+	db.Where("username = (?)", username).Find(&user)
+	if CheckPasswordHash(BytesToString(hashBytes), user.Password) {
+		var secret = "bookingsign"
+		jwt := EncodeJWT(user, secret)
+		return models.JWT{jwt}, nil
+	}
 	return nil, models.Error{400, "username or password incorrect"}
 }
 
