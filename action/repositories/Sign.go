@@ -26,7 +26,10 @@ func AddSign(c echo.Context) (interface{}, interface{}) {
 	}
 	sign.CreateSignModel(c)
 	db.NewRecord(sign)
-	db.Create(&sign)
+	err = db.Create(&sign)
+	if checkSign != nil {
+		return nil, err
+	}
 	return models.Success{200, "success"}, nil
 }
 
@@ -57,10 +60,8 @@ func GetSignByName(c echo.Context) (interface{}, interface{}) {
 func DeleteSign(c echo.Context) (interface{}, interface{}) {
 	db := db.DbManager()
 	sign := models.Sign{}
-	err := db.Find(&sign, c.FormValue("id"))
-	if err != nil {
-		return nil, models.Error{400, "ไม่มีป้ายนี้ใน Database"}
-	}
+	db.Find(&sign, c.FormValue("id"))
+	log.Print(sign)
 	os.Remove(`D:\fe_booking_sign\public\img\` + sign.Picture)
 	_ = db.Delete(&sign)
 	return models.Success{200, "success"}, nil
