@@ -51,5 +51,5 @@ func (s *Sign) CreateSignModel(c echo.Context) {
 	s.Location = c.FormValue("location")
 	s.Limitdate, _ = strconv.Atoi(c.FormValue("limitdate"))
 	s.Beforebooking, _ = strconv.Atoi(c.FormValue("beforebooking"))
-	s.Picture = c.FormValue("signname")
+	s.Picture = c.FormValue("signname") + ".jpg"
 }

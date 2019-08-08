@@ -72,18 +72,18 @@ func UpdateSign(c echo.Context) (interface{}, interface{}) {
 	if !sign.CheckParamPostForm(c) {
 		return nil, models.Error{400, "กรอกข้อมูลไม่ครบ"}
 	}
-	_, err := UploadImg(c)
-	if err != nil {
-		return nil, err
-	}
-	sign.CreateSignModel(c)
 	oldSign, err := GetSignByID(c)
 	if err != nil {
 		return nil, err
 	}
 	oldPicture := oldSign.(models.Sign).Picture
 	os.Remove(`D:\fe_booking_sign\public\img\` + oldPicture)
-	db.Update(&sign)
+	sign.CreateSignModel(c)
+	_, err = UploadImg(c)
+	if err != nil {
+		return nil, err
+	}
+	db.Save(&sign)
 	return models.Success{200, "success"}, nil
 }
 
@@ -97,7 +97,7 @@ func UploadImg(c echo.Context) (interface{}, interface{}) {
 		return err, nil
 	}
 	defer src.Close()
-	dst, err := os.Create(`D:\fe_booking_sign\public\img\` + c.FormValue("signname"))
+	dst, err := os.Create(`D:\fe_booking_sign\public\img\` + c.FormValue("signname") + `.jpg`)
 	if err != nil {
 		return err, nil
 	}
