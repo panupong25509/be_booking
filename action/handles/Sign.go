@@ -7,7 +7,6 @@ import (
 )
 
 func AddSign(c echo.Context) error {
-	// data := DynamicPostForm(c)
 	success, err := repositories.AddSign(c)
 	if err != nil {
 		status := err.(models.Error)
@@ -26,8 +25,7 @@ func GetAllSign(c echo.Context) error {
 }
 
 func GetSignByID(c echo.Context) error {
-	data := DynamicPostForm(c)
-	sign, err := repositories.GetSignByID(c, data)
+	sign, err := repositories.GetSignByID(c)
 	if err != nil {
 		status := err.(models.Error)
 		return c.JSON(status.Code, status)
@@ -45,8 +43,7 @@ func GetSignByName(c echo.Context) error {
 }
 
 func DeleteSign(c echo.Context) error {
-	data := DynamicPostForm(c)
-	success, err := repositories.DeleteSign(c, data)
+	success, err := repositories.DeleteSign(c)
 	if err != nil {
 		status := err.(models.Error)
 		return c.JSON(status.Code, status)
@@ -55,8 +52,7 @@ func DeleteSign(c echo.Context) error {
 }
 
 func UpdateSign(c echo.Context) error {
-	data := DynamicPostForm(c)
-	success, err := repositories.UpdateSign(c, data)
+	success, err := repositories.UpdateSign(c)
 	if err != nil {
 		status := err.(models.Error)
 		return c.JSON(status.Code, status)

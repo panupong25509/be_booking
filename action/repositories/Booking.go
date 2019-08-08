@@ -16,9 +16,9 @@ import (
 	"github.com/siredwin/pongorenderer/renderer"
 )
 
-func AddBooking(c echo.Context, data map[string]interface{}) (interface{}, interface{}) {
+func AddBooking(c echo.Context) (interface{}, interface{}) {
 	db := db.DbManager()
-	sign, err := GetSignByID(c, data)
+	sign, err := GetSignByID(c)
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +95,7 @@ func GetBookingDaysBySign(c echo.Context) (interface{}, interface{}) {
 	return days, nil
 }
 
-func RejectBooking(c echo.Context, data map[string]interface{}) (interface{}, interface{}) {
+func RejectBooking(c echo.Context) (interface{}, interface{}) {
 	jwtReq, err := GetJWT(c)
 	if err != nil {
 		return nil, err
@@ -108,10 +108,9 @@ func RejectBooking(c echo.Context, data map[string]interface{}) (interface{}, in
 	if tokens["Role"] != "admin" {
 		return nil, models.Error{500, "You not Admin"}
 	}
-	idbooking, _ := strconv.Atoi(data["id"].(string))
-	comment := data["comment"].(string)
+	comment := c.FormValue("comment")
 	booking := models.Booking{}
-	err = db.Find(&booking, idbooking)
+	err = db.Find(&booking, c.FormValue("id"))
 	if err != nil {
 		return nil, models.Error{500, "Can't Select data form Database"}
 	}
@@ -130,7 +129,7 @@ func RejectBooking(c echo.Context, data map[string]interface{}) (interface{}, in
 	return models.Success{200, "success"}, nil
 }
 
-func ApproveBooking(c echo.Context, data map[string]interface{}) (interface{}, interface{}) {
+func ApproveBooking(c echo.Context) (interface{}, interface{}) {
 	jwtReq, err := GetJWT(c)
 	if err != nil {
 		return nil, err
@@ -143,9 +142,8 @@ func ApproveBooking(c echo.Context, data map[string]interface{}) (interface{}, i
 	if tokens["Role"] != "admin" {
 		return nil, models.Error{500, "You not Admin"}
 	}
-	id, _ := strconv.Atoi(data["id"].(string))
 	booking := models.Booking{}
-	err = db.Find(&booking, id)
+	err = db.Find(&booking, c.FormValue("id"))
 	if err != nil {
 		return nil, err
 	}

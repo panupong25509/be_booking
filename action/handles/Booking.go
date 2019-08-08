@@ -7,8 +7,7 @@ import (
 )
 
 func AddBooking(c echo.Context) error {
-	data := DynamicPostForm(c)
-	newBooking, err := repositories.AddBooking(c, data)
+	newBooking, err := repositories.AddBooking(c)
 	if err != nil {
 		status := err.(models.Error)
 		return c.JSON(status.Code, status)
@@ -38,8 +37,7 @@ func GetBookingDayBySign(c echo.Context) error {
 }
 
 func ApproveBooking(c echo.Context) error {
-	data := DynamicPostForm(c)
-	message, err := repositories.ApproveBooking(c, data)
+	message, err := repositories.ApproveBooking(c)
 	if err != nil {
 		status := err.(models.Error)
 		return c.JSON(status.Code, status)
@@ -48,8 +46,7 @@ func ApproveBooking(c echo.Context) error {
 }
 
 func RejectBooking(c echo.Context) error {
-	data := DynamicPostForm(c)
-	message, err := repositories.RejectBooking(c, data)
+	message, err := repositories.RejectBooking(c)
 	if err != nil {
 		status := err.(models.Error)
 		return c.JSON(status.Code, status)

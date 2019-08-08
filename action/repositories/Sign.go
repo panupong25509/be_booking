@@ -3,7 +3,6 @@ package repositories
 import (
 	"io"
 	"os"
-	"strconv"
 
 	"github.com/panupong25509/be_booking_sign/db"
 	"github.com/panupong25509/be_booking_sign/models"
@@ -37,11 +36,10 @@ func GetAllSign(c echo.Context) (interface{}, interface{}) {
 	return signs, nil
 }
 
-func GetSignByID(c echo.Context, data map[string]interface{}) (interface{}, interface{}) {
+func GetSignByID(c echo.Context) (interface{}, interface{}) {
 	db := db.DbManager()
 	sign := models.Sign{}
-	// if data["id"]
-	db.First(&sign, data["id"])
+	db.First(&sign, c.FormValue("id"))
 	return sign, nil
 }
 
@@ -55,11 +53,10 @@ func GetSignByName(c echo.Context) (interface{}, interface{}) {
 	return nil, models.Error{500, "Not have sign"}
 }
 
-func DeleteSign(c echo.Context, data map[string]interface{}) (interface{}, interface{}) {
+func DeleteSign(c echo.Context) (interface{}, interface{}) {
 	db := db.DbManager()
 	sign := models.Sign{}
-	id, _ := strconv.Atoi(data["id"].(string))
-	err := db.Find(&sign, id)
+	err := db.Find(&sign, c.FormValue("id"))
 	if err != nil {
 		return nil, models.Error{400, "ไม่มีป้ายนี้ใน Database"}
 	}
@@ -68,7 +65,7 @@ func DeleteSign(c echo.Context, data map[string]interface{}) (interface{}, inter
 	return models.Success{200, "success"}, nil
 }
 
-func UpdateSign(c echo.Context, data map[string]interface{}) (interface{}, interface{}) {
+func UpdateSign(c echo.Context) (interface{}, interface{}) {
 	db := db.DbManager()
 	sign := models.Sign{}
 	if !sign.CheckParamPostForm(c) {
@@ -79,7 +76,7 @@ func UpdateSign(c echo.Context, data map[string]interface{}) (interface{}, inter
 		return nil, err
 	}
 	sign.CreateSignModel(c)
-	oldSign, err := GetSignByID(c, data)
+	oldSign, err := GetSignByID(c)
 	if err != nil {
 		return nil, err
 	}
