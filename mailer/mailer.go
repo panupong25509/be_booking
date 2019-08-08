@@ -3,7 +3,6 @@ package mailer
 import (
 	"log"
 
-	"github.com/labstack/echo"
 	"github.com/panupong25509/be_booking_sign/config"
 
 	"gopkg.in/gomail.v2"
@@ -38,7 +37,7 @@ func HTML(status, booking string) string {
 `
 }
 
-func SendEmail(c echo.Context, Subject string, email string, status string) {
+func SendEmail(Subject string, email string, status string) {
 	m := gomail.NewMessage()
 	m.SetHeader("From", config.GetConfig().MAIL_EMAIL)
 	m.SetHeader("To", email)

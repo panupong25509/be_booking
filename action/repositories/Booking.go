@@ -4,11 +4,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/JewlyTwin/be_booking_sign/mailers"
 	"github.com/astaxie/beego/utils/pagination"
 	"github.com/flosch/pongo2"
 	"github.com/labstack/echo"
 	"github.com/panupong25509/be_booking_sign/db"
+	"github.com/panupong25509/be_booking_sign/mailer"
 	"github.com/panupong25509/be_booking_sign/models"
 	"github.com/siredwin/pongorenderer/renderer"
 )
@@ -101,10 +101,7 @@ func RejectBooking(c echo.Context) (interface{}, interface{}) {
 	}
 	comment := c.FormValue("comment")
 	booking := models.Booking{}
-	err = db.Find(&booking, c.FormValue("id"))
-	if err != nil {
-		return nil, models.Error{500, "Can't Select data form Database"}
-	}
+	db.Find(&booking, c.FormValue("id"))
 	if booking.Status == "reject" {
 		return nil, models.Error{500, "This booking id is status reject"}
 	}
@@ -113,11 +110,11 @@ func RejectBooking(c echo.Context) (interface{}, interface{}) {
 	}
 	booking.Comment = comment
 	booking.Status = "reject"
-	// userInterface, err := GetUserByIduuid(c, booking.ApplicantID)
-	// user, err := userInterface.(models.User)
-	db.Update(&booking)
-	// mailers.SendWelcomeEmails(c, "Your booking Rejected", user.Email, false)
-	return models.Success{200, "success"}, nil
+	userInterface, err := GetUserByIduuid(c, booking.ApplicantID)
+	db.Save(&booking)
+	user, err := userInterface.(models.User)
+	mailer.SendEmail("Your booking Rejected", user.Email, "reject")
+	return models.Success{200, "reject success"}, nil
 }
 
 func ApproveBooking(c echo.Context) (interface{}, interface{}) {
@@ -145,7 +142,7 @@ func ApproveBooking(c echo.Context) (interface{}, interface{}) {
 	db.Save(&booking)
 	userInterface, err := GetUserByIduuid(c, booking.ApplicantID)
 	user, err := userInterface.(models.User)
-	mailers.SendEmails("Your booking approved", user.Email, "approve")
+	mailer.SendEmail("Your booking approved", user.Email, "approve")
 	return models.Success{200, "Approve success"}, nil
 }
 
@@ -242,7 +239,7 @@ func GetPaginateUser(c echo.Context) (interface{}, interface{}) {
 		return nil, err
 	}
 	booking := []models.Booking{}
-	db.Order("id desc").Where("applicant_id = (?)", tokens["UserID"]).Find(&booking)
+	db.Order(c.Param("order")).Where("applicant_id = (?)", tokens["UserID"]).Find(&booking)
 	postsPerPage := 5
 	pagestring, _ := strconv.Atoi(c.Param("page"))
 	pageint := pagestring - 1
