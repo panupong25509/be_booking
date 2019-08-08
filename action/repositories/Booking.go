@@ -1,11 +1,8 @@
 package repositories
 
 import (
-	"log"
 	"strconv"
 	"time"
-
-	"net/http"
 
 	"github.com/JewlyTwin/be_booking_sign/mailers"
 	"github.com/astaxie/beego/utils/pagination"
@@ -199,73 +196,82 @@ func NewSlice(start, count, step int) []int {
 	return s
 }
 
-func GetPaginateAdmin(c echo.Context) error {
+func GetPaginateAdmin(c echo.Context) (interface{}, interface{}) {
 	db := db.DbManager()
-	// Lets use the Forbes top 7.
+	jwtReq, err := GetJWT(c)
+	if err != nil {
+		return nil, err
+	}
+	tokens, err := DecodeJWT(jwtReq.(string))
+	if err != nil {
+		return nil, err
+	}
+	if tokens["Role"] != "admin" {
+		return nil, models.Error{500, "You not Admin"}
+	}
 	booking := []models.Booking{}
 	db.Where("status = 'pending'").Find(&booking)
-	log.Print(booking)
-	// usernames := []string{"Larry Ellison", "Carlos Slim Helu",
-	// "Mark Zuckerberg", "Amancio Ortega ", "Jeff Bezos", " Warren Buffett ", "Bill Gates"}
-	// sets paginator with the current offset (from the url query param)
-	postsPerPage := 2
+	postsPerPage := 5
+	pagestring, _ := strconv.Atoi(c.Param("page"))
+	pageint := pagestring - 1
 	paginator = pagination.NewPaginator(c.Request(), postsPerPage, len(booking))
-	// fetch the next posts "postsPerPage"
-	idrange := NewSlice(paginator.Offset(), postsPerPage, 1)
-	//create a new page list that shows up on html
+	idrange := NewSlice((pageint * postsPerPage), postsPerPage, 1)
 	Bookings := []models.Booking{}
 	for _, num := range idrange {
-		//Prevent index out of range errors
 		if num <= len(booking)-1 {
 			myuser := booking[num]
+			user, err := GetUserByIduuid(c, myuser.ApplicantID)
+			if err != nil {
+				return nil, err
+			}
+			myuser.Applicant = user.(models.User)
+			sign, err := GetSignByIDForPage(myuser.SignID)
+			if err != nil {
+				return nil, err
+			}
+			myuser.Sign = sign.(models.Sign)
 			Bookings = append(Bookings, myuser)
 		}
 	}
-	// set the paginator in context
-	// also set the page list in context
-	// if you also have more data, set it context
-	data = pongo2.Context{"paginator": paginator, "posts": Bookings}
-	log.Print(data)
-	return c.Render(http.StatusOK, "templates/page.html", data)
+	return Bookings, nil
 }
 
-// func GetPaginateAdmin(page string, c echo.Context) (interface{}, interface{}) {
-// 	jwtReq, err := GetJWT(c)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	tokens, err := DecodeJWT(jwtReq.(string))
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	db := db.DbManager()
-// 	if tokens["Role"] != "admin" {
-// 		return nil, models.Error{500, "You not Admin"}
-// 	}
-
-// 	numberPage, _ := strconv.Atoi(page)
-// 	// db.Offset(100).Limit(20).Find(&interface, "id = ?", id)
-// 	q := db.Paginate(numberPage, 10)
-// 	booking := []models.Booking{}
-// 	err = q.Where("status = 'pending'").All(&booking)
-
-// 	bookings := []models.Booking{}
-// 	for _, value := range booking {
-// 		user, err := GetUserByIduuid(c, value.ApplicantID)
-// 		if err != nil {
-// 			return nil, err
-// 		}
-// 		value.Applicant = user.(models.User)
-// 		sign, err := GetSignByID(c, value.SignID)
-// 		if err != nil {
-// 			return nil, err
-// 		}
-// 		value.Sign = sign.(models.Sign)
-// 		bookings = append(bookings, value)
-// 	}
-// 	bookingJson := models.Page{numberPage, bookings, q.Paginator.TotalPages}
-// 	return &bookingJson, nil
-// }
+func GetPaginateUser(c echo.Context) (interface{}, interface{}) {
+	db := db.DbManager()
+	jwtReq, err := GetJWT(c)
+	if err != nil {
+		return nil, err
+	}
+	tokens, err := DecodeJWT(jwtReq.(string))
+	if err != nil {
+		return nil, err
+	}
+	booking := []models.Booking{}
+	db.Order("id desc").Where("applicant_id = (?)", tokens["UserID"]).Find(&booking)
+	postsPerPage := 5
+	pagestring, _ := strconv.Atoi(c.Param("page"))
+	pageint := pagestring - 1
+	paginator = pagination.NewPaginator(c.Request(), postsPerPage, len(booking))
+	idrange := NewSlice((pageint * postsPerPage), postsPerPage, 1)
+	Bookings := []models.Booking{}
+	for _, num := range idrange {
+		if num <= len(booking)-1 {
+			myuser := booking[num]
+			user, err := GetUserByIduuid(c, myuser.ApplicantID)
+			if err != nil {
+				return nil, err
+			}
+			myuser.Applicant = user.(models.User)
+			sign, err := GetSignByIDForPage(myuser.SignID)
+			if err != nil {
+				return nil, err
+			}
+			myuser.Sign = sign.(models.Sign)
+			Bookings = append(Bookings, myuser)
+		}
+	}
+	return Bookings, nil
+}
 
 // func GetPaginateUser(page string, order string, c echo.Context) (interface{}, interface{}) {
 // 	jwtReq, err := GetJWT(c)

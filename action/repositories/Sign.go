@@ -47,6 +47,13 @@ func GetSignByID(c echo.Context) (interface{}, interface{}) {
 	return sign, nil
 }
 
+func GetSignByIDForPage(id int) (interface{}, interface{}) {
+	db := db.DbManager()
+	sign := models.Sign{}
+	db.First(&sign, id)
+	return sign, nil
+}
+
 func GetSignByName(c echo.Context) (interface{}, interface{}) {
 	db := db.DbManager()
 	signs := []models.Sign{}

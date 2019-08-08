@@ -56,7 +56,17 @@ func RejectBooking(c echo.Context) error {
 
 func GetPaginateAdmin(c echo.Context) error {
 	// page := c.Param("page")
-	booking := repositories.GetPaginateAdmin(c)
+	booking, _ := repositories.GetPaginateAdmin(c)
+	// if err != nil {
+	// 	status := err.(models.Error)
+	// 	return c.JSON(status.Code, status)
+	// }
+	return c.JSON(200, booking)
+}
+
+func GetPaginateUser(c echo.Context) error {
+	// page := c.Param("page")
+	booking, _ := repositories.GetPaginateUser(c)
 	// if err != nil {
 	// 	status := err.(models.Error)
 	// 	return c.JSON(status.Code, status)
