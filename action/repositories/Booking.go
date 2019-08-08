@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"io"
+	"log"
 	"os"
 	"strconv"
 	"time"
@@ -202,6 +203,14 @@ func ApproveBooking(c echo.Context) (interface{}, interface{}) {
 // 	return nil, nil
 // }
 
+func GetAllBookingThisYear() models.Bookings {
+	db := db.DbManager()
+	bookings := models.Bookings{}
+	db.Where("extract(year from created_at) = (?)", time.Now().Year()).Find(&bookings)
+	log.Print(bookings)
+	return bookings
+}
+
 var (
 	paginator    = &pagination.Paginator{}
 	data         = pongo2.Context{}
@@ -218,7 +227,36 @@ func NewSlice(start, count, step int) []int {
 	return s
 }
 
-func GetPaginateAdmin(c echo.Context) (interface{}, interface{}) {
+func Paginator(c echo.Context, allrequest, allbookingthisyear, page, count int, booking []models.Booking) (interface{}, interface{}) {
+	pageint := page - 1
+	paginator = pagination.NewPaginator(c.Request(), count, len(booking))
+	idrange := NewSlice((pageint * count), count, 1)
+	Bookings := []models.Booking{}
+	for _, num := range idrange {
+		if num <= len(booking)-1 {
+			myuser := booking[num]
+			user, err := GetUserByIduuid(c, myuser.ApplicantID)
+			if err != nil {
+				return nil, err
+			}
+			myuser.Applicant = user.(models.User)
+			sign, err := GetSignByIDForPage(myuser.SignID)
+			if err != nil {
+				return nil, err
+			}
+			myuser.Sign = sign.(models.Sign)
+			Bookings = append(Bookings, myuser)
+		}
+	}
+	allpage := int((len(booking) / count))
+	if len(booking)%count != 0 {
+		allpage++
+	}
+	Pagination := models.Paginator{allrequest, allbookingthisyear, int(allpage), Bookings}
+	return Pagination, nil
+}
+
+func GetBookingAdmin(c echo.Context) (interface{}, interface{}) {
 	db := db.DbManager()
 	jwtReq, err := GetJWT(c)
 	if err != nil {
@@ -233,37 +271,17 @@ func GetPaginateAdmin(c echo.Context) (interface{}, interface{}) {
 	}
 	booking := []models.Booking{}
 	db.Where("status = 'pending'").Find(&booking)
-	postsPerPage := 3
-	pagestring, _ := strconv.Atoi(c.Param("page"))
-	pageint := pagestring - 1
-	paginator = pagination.NewPaginator(c.Request(), postsPerPage, len(booking))
-	idrange := NewSlice((pageint * postsPerPage), postsPerPage, 1)
-	Bookings := []models.Booking{}
-	for _, num := range idrange {
-		if num <= len(booking)-1 {
-			myuser := booking[num]
-			user, err := GetUserByIduuid(c, myuser.ApplicantID)
-			if err != nil {
-				return nil, err
-			}
-			myuser.Applicant = user.(models.User)
-			sign, err := GetSignByIDForPage(myuser.SignID)
-			if err != nil {
-				return nil, err
-			}
-			myuser.Sign = sign.(models.Sign)
-			Bookings = append(Bookings, myuser)
-		}
+
+	bookingsThisYear := GetAllBookingThisYear()
+	page, _ := strconv.Atoi(c.Param("page"))
+	Pagination, err := Paginator(c, len(booking), len(bookingsThisYear), page, 5, booking)
+	if err != nil {
+		return nil, err
 	}
-	allpage := int((len(booking) / postsPerPage))
-	if len(booking)%postsPerPage != 0 {
-		allpage++
-	}
-	Pagination := models.Paginator{int(allpage), Bookings}
 	return Pagination, nil
 }
 
-func GetPaginateUser(c echo.Context) (interface{}, interface{}) {
+func GetBookingUser(c echo.Context) (interface{}, interface{}) {
 	db := db.DbManager()
 	jwtReq, err := GetJWT(c)
 	if err != nil {
@@ -275,32 +293,11 @@ func GetPaginateUser(c echo.Context) (interface{}, interface{}) {
 	}
 	booking := []models.Booking{}
 	db.Order(c.Param("order")).Where("applicant_id = (?)", tokens["UserID"]).Find(&booking)
-	postsPerPage := 5
-	pagestring, _ := strconv.Atoi(c.Param("page"))
-	pageint := pagestring - 1
-	paginator = pagination.NewPaginator(c.Request(), postsPerPage, len(booking))
-	idrange := NewSlice((pageint * postsPerPage), postsPerPage, 1)
-	Bookings := []models.Booking{}
-	for _, num := range idrange {
-		if num <= len(booking)-1 {
-			myuser := booking[num]
-			user, err := GetUserByIduuid(c, myuser.ApplicantID)
-			if err != nil {
-				return nil, err
-			}
-			myuser.Applicant = user.(models.User)
-			sign, err := GetSignByIDForPage(myuser.SignID)
-			if err != nil {
-				return nil, err
-			}
-			myuser.Sign = sign.(models.Sign)
-			Bookings = append(Bookings, myuser)
-		}
+
+	page, _ := strconv.Atoi(c.Param("page"))
+	Pagination, err := Paginator(c, 0, 0, page, 5, booking)
+	if err != nil {
+		return nil, err
 	}
-	allpage := int((len(booking) / postsPerPage))
-	if len(booking)%postsPerPage != 0 {
-		allpage++
-	}
-	Pagination := models.Paginator{int(allpage), Bookings}
 	return Pagination, nil
 }

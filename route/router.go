@@ -27,7 +27,7 @@ func Init() *echo.Echo {
 	e.GET("/booking/:page/:order", api.GetPaginateUser)
 	e.GET("/getbookingdays/:id", api.GetBookingDayBySign)
 	//admin
-	e.GET("/admin/booking/:page", api.GetPaginateAdmin)
+	e.GET("/admin/booking/:page", api.GetBookingAdmin)
 	e.POST("/admin/booking/approve", api.ApproveBooking)
 	e.POST("/admin/booking/reject", api.RejectBooking)
 

@@ -14,8 +14,10 @@ func (b Booking) TableName() string {
 }
 
 type Paginator struct {
-	Allpage  int       `json:"allpage"`
-	Bookings []Booking `json:"bookings"`
+	Allrequest         int       `json:"allrequest"`
+	AllBookingThisYear int       `json:"allbookingthisyear"`
+	Allpage            int       `json:"allpage"`
+	Bookings           []Booking `json:"bookings"`
 }
 
 type Booking struct {
