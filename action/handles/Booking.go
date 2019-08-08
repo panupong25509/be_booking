@@ -54,8 +54,8 @@ func RejectBooking(c echo.Context) error {
 	return c.JSON(200, message)
 }
 
-func GetPaginateAdmin(c echo.Context) error {
-	booking, _ := repositories.GetPaginateAdmin(c)
+func GetBookingAdmin(c echo.Context) error {
+	booking, _ := repositories.GetBookingAdmin(c)
 	// if err != nil {
 	// 	status := err.(models.Error)
 	// 	return c.JSON(status.Code, status)
@@ -63,8 +63,8 @@ func GetPaginateAdmin(c echo.Context) error {
 	return c.JSON(200, booking)
 }
 
-func GetPaginateUser(c echo.Context) error {
-	booking, err := repositories.GetPaginateUser(c)
+func GetBookingUser(c echo.Context) error {
+	booking, err := repositories.GetBookingUser(c)
 	if err != nil {
 		status := err.(models.Error)
 		return c.JSON(status.Code, status)
