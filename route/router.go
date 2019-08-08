@@ -14,7 +14,6 @@ func Init() *echo.Echo {
 	e.POST("/register", api.Register)
 	//User
 	e.GET("/user", api.GetUserById)
-	e.GET("/user/booking/:page", api.GetPaginateUser)
 	//Sign
 	e.POST("/deletesign", api.DeleteSign)
 	e.POST("/updatesign", api.UpdateSign)
@@ -24,6 +23,7 @@ func Init() *echo.Echo {
 	// e.GET("/sign/{id}", api.GetSignById)
 	//Booking
 	e.POST("/addbooking", api.AddBooking)
+	e.GET("/booking/:page", api.GetPaginateUser)
 	e.GET("/getbookingdays/:id", api.GetBookingDayBySign)
 	//admin
 	e.GET("/admin/booking/:page", api.GetPaginateAdmin)

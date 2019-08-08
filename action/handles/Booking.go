@@ -64,11 +64,11 @@ func GetPaginateAdmin(c echo.Context) error {
 }
 
 func GetPaginateUser(c echo.Context) error {
-	booking, _ := repositories.GetPaginateUser(c)
-	// if err != nil {
-	// 	status := err.(models.Error)
-	// 	return c.JSON(status.Code, status)
-	// }
+	booking, err := repositories.GetPaginateUser(c)
+	if err != nil {
+		status := err.(models.Error)
+		return c.JSON(status.Code, status)
+	}
 	return c.JSON(200, booking)
 }
 

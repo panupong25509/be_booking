@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"encoding/base64"
-	"log"
 	"reflect"
 	"unsafe"
 
@@ -90,7 +89,6 @@ func GetUserById(c echo.Context) (interface{}, interface{}) {
 	if err != nil {
 		return nil, err
 	}
-	log.Print(tokens["UserID"])
 	db := db.DbManager()
 	user := models.User{}
 	db.Where("id like (?)", tokens["UserID"]).Find(&user)
