@@ -10,7 +10,7 @@ import (
 )
 
 func (b Booking) TableName() string {
-	return "booking"
+	return "bookings"
 }
 
 type Booking struct {

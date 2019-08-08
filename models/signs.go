@@ -13,7 +13,7 @@ func (s Sign) TableName() string {
 
 type Sign struct {
 	ID            int       `json:"id" db:"id"`
-	Name          string    `json:"name" db:"sign_name"`
+	Name          string    `json:"name" db:"name"`
 	Location      string    `json:"location" db:"location"`
 	Limitdate     int       `json:"limitdate" db:"limitdate"`
 	Beforebooking int       `json:"beforebooking" db:"beforebooking"`

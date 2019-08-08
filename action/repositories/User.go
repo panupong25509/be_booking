@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"encoding/base64"
+	"log"
 	"reflect"
 	"unsafe"
 
@@ -89,18 +90,16 @@ func GetUserById(c echo.Context) (interface{}, interface{}) {
 	if err != nil {
 		return nil, err
 	}
+	log.Print(tokens["UserID"])
 	db := db.DbManager()
 	user := models.User{}
-	db.Find(&user, tokens["UserID"])
+	db.Where("id like (?)", tokens["UserID"]).Find(&user)
 	return user, nil
 }
 
 func GetUserByIduuid(c echo.Context, id uuid.UUID) (interface{}, interface{}) {
 	db := db.DbManager()
 	user := models.User{}
-	err := db.Find(&user, id)
-	if err != nil {
-		return nil, models.Error{400, "ไม่มีผู้ใช้นี้ใน"}
-	}
+	db.Where("id like (?)", id).Find(&user)
 	return user, nil
 }

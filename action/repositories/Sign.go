@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"io"
+	"log"
 	"os"
 
 	"github.com/panupong25509/be_booking_sign/db"
@@ -25,6 +26,7 @@ func AddSign(c echo.Context) (interface{}, interface{}) {
 		return nil, err
 	}
 	sign.CreateSignModel(c)
+	db.NewRecord(sign)
 	db.Create(&sign)
 	return models.Success{200, "success"}, nil
 }
@@ -33,6 +35,7 @@ func GetAllSign(c echo.Context) (interface{}, interface{}) {
 	db := db.DbManager()
 	signs := []models.Sign{}
 	db.Find(&signs)
+	log.Print(signs)
 	return signs, nil
 }
 
@@ -46,7 +49,7 @@ func GetSignByID(c echo.Context) (interface{}, interface{}) {
 func GetSignByName(c echo.Context) (interface{}, interface{}) {
 	db := db.DbManager()
 	signs := []models.Sign{}
-	db.Where("sign_name = ?", c.FormValue("signname")).First(&signs)
+	db.Where("name = ?", c.FormValue("signname")).First(&signs)
 	if len(signs) != 0 {
 		return signs[0], nil
 	}
