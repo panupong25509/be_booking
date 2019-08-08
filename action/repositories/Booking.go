@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"io"
+	"os"
 	"strconv"
 	"time"
 
@@ -31,9 +33,35 @@ func AddBooking(c echo.Context) (interface{}, interface{}) {
 	if !validate {
 		return nil, models.Error{400, "Busy date"}
 	}
+	_, err = UploadImgForBooking(c, code)
+	if err != nil {
+		return nil, err
+	}
 	db.NewRecord(newBooking)
 	db.Create(&newBooking)
 	return newBooking, nil
+}
+
+func UploadImgForBooking(c echo.Context, code string) (interface{}, interface{}) {
+	file, err := c.FormFile("file")
+	if err != nil {
+		return err, nil
+	}
+	src, err := file.Open()
+	if err != nil {
+		return err, nil
+	}
+	defer src.Close()
+	dst, err := os.Create(`D:\fe_booking_sign\public\img\applicant_poster\` + code + `.jpg`)
+	if err != nil {
+		return err, nil
+	}
+	defer dst.Close()
+	if _, err = io.Copy(dst, src); err != nil {
+		return err, nil
+	}
+
+	return nil, nil
 }
 
 func GenCodeBooking(c echo.Context, sign models.Sign) string {
@@ -84,6 +112,13 @@ func GetBookingDaysBySign(c echo.Context) (interface{}, interface{}) {
 		days = append(days, models.BookingDay{value.FirstDate, value.LastDate})
 	}
 	return days, nil
+}
+
+func GetBookingById(c echo.Context) (interface{}, interface{}) {
+	db := db.DbManager()
+	bookings := models.Bookings{}
+	db.First(&bookings, c.Param("id"))
+	return &bookings, nil
 }
 
 func RejectBooking(c echo.Context) (interface{}, interface{}) {

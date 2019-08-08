@@ -27,6 +27,15 @@ func AddBooking(c echo.Context) error {
 // 	return c.Render(200, r.JSON(deleteBooking))
 // }
 
+func GetBookingById(c echo.Context) error {
+	days, err := repositories.GetBookingById(c)
+	if err != nil {
+		status := err.(models.Error)
+		return c.JSON(status.Code, status)
+	}
+	return c.JSON(200, days)
+}
+
 func GetBookingDayBySign(c echo.Context) error {
 	days, err := repositories.GetBookingDaysBySign(c)
 	if err != nil {

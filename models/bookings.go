@@ -19,19 +19,20 @@ type Paginator struct {
 }
 
 type Booking struct {
-	ID          int       `json:"id" db:"id"`
-	Code        string    `json:"booking_code" db:"code"`
-	ApplicantID uuid.UUID `json:"applicant_id" db:"applicant_id" fk_id:"id"`
-	SignID      int       `json:"sign_id" db:"sign_id" fk_id:"id"`
-	Description string    `json:"description" db:"description"`
-	FirstDate   time.Time `json:"first_date" db:"first_date"`
-	LastDate    time.Time `json:"last_date" db:"last_date"`
-	Status      string    `json:"status" db:"status"`
-	Comment     string    `json:"comment" db:"comment"`
-	Applicant   User      `json:"applicant" db:"-"`
-	Sign        Sign      `json:"sign" db:"-"`
-	CreatedAt   time.Time `json:"-" db:"created_at"`
-	UpdatedAt   time.Time `json:"-" db:"updated_at"`
+	ID               int       `json:"id" db:"id"`
+	Code             string    `json:"booking_code" db:"code"`
+	ApplicantID      uuid.UUID `json:"applicant_id" db:"applicant_id" fk_id:"id"`
+	SignID           int       `json:"sign_id" db:"sign_id" fk_id:"id"`
+	Description      string    `json:"description" db:"description"`
+	FirstDate        time.Time `json:"first_date" db:"first_date"`
+	LastDate         time.Time `json:"last_date" db:"last_date"`
+	Apllicant_poster string    `json:"apllicant_poster" db:"apllicant_poster"`
+	Status           string    `json:"status" db:"status"`
+	Comment          string    `json:"comment" db:"comment"`
+	Applicant        User      `json:"applicant" db:"-"`
+	Sign             Sign      `json:"sign" db:"-"`
+	CreatedAt        time.Time `json:"-" db:"created_at"`
+	UpdatedAt        time.Time `json:"-" db:"updated_at"`
 }
 
 type IDbooking struct {
@@ -81,6 +82,7 @@ func (b *Booking) CreateModel(c echo.Context, code string) bool {
 	b.FirstDate, _ = time.Parse("2006-01-02", c.FormValue("first_date"))
 	b.LastDate, _ = time.Parse("2006-01-02", c.FormValue("last_date"))
 	b.Status = "pending"
+	b.Apllicant_poster = code + ".jpg"
 	b.Comment = ""
 	return true
 }
