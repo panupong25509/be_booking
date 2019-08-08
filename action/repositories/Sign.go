@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"io"
-	"log"
 	"os"
 
 	"github.com/panupong25509/be_booking_sign/db"
@@ -36,9 +35,8 @@ func AddSign(c echo.Context) (interface{}, interface{}) {
 
 func GetAllSign(c echo.Context) (interface{}, interface{}) {
 	db := db.DbManager()
-	signs := []models.Sign{}
-	db.Find(&signs)
-	log.Print(signs)
+	signs := models.Signs{}
+	db.Find(&signs.Signs)
 	return signs, nil
 }
 
