@@ -134,10 +134,7 @@ func ApproveBooking(c echo.Context) (interface{}, interface{}) {
 		return nil, models.Error{500, "You not Admin"}
 	}
 	booking := models.Booking{}
-	err = db.Find(&booking, c.FormValue("id"))
-	if err != nil {
-		return nil, err
-	}
+	db.Find(&booking, c.FormValue("id"))
 	if booking.Status == "approve" {
 		return nil, models.Error{500, "This booking approved"}
 	}
@@ -145,13 +142,10 @@ func ApproveBooking(c echo.Context) (interface{}, interface{}) {
 		return nil, models.Error{500, "This booking rejected"}
 	}
 	booking.Status = "approve"
-	// userInterface, err := GetUserByIduuid(c, booking.ApplicantID)
-	// user, err := userInterface.(models.User)
-	err = db.Update(&booking)
-	if err != nil {
-		return nil, err
-	}
-	// mailers.SendWelcomeEmails(c, "Your booking approved", user.Email, true)
+	db.Save(&booking)
+	userInterface, err := GetUserByIduuid(c, booking.ApplicantID)
+	user, err := userInterface.(models.User)
+	mailers.SendEmails("Your booking approved", user.Email, "approve")
 	return models.Success{200, "Approve success"}, nil
 }
 
@@ -171,10 +165,10 @@ func ApproveBooking(c echo.Context) (interface{}, interface{}) {
 // 	return Success(nil), nil
 // }
 
-func SendMail(c echo.Context) (interface{}, interface{}) {
-	mailers.SendWelcomeEmails(c.Response(), "Test", "panupong.jkn@gmail.com", true)
-	return nil, nil
-}
+// func SendMail(c echo.Context) (interface{}, interface{}) {
+// 	mailers.SendWelcomeEmails(c.Response(), "Test", "panupong.jkn@gmail.com", true)
+// 	return nil, nil
+// }
 
 var (
 	paginator    = &pagination.Paginator{}
@@ -278,36 +272,3 @@ func GetPaginateUser(c echo.Context) (interface{}, interface{}) {
 	Pagination := models.Paginator{int(allpage), Bookings}
 	return Pagination, nil
 }
-
-// func GetPaginateUser(page string, order string, c echo.Context) (interface{}, interface{}) {
-// 	jwtReq, err := GetJWT(c)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	tokens, err := DecodeJWT(jwtReq.(string))
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	db := db.DbManager()
-// 	numberPage, _ := strconv.Atoi(page)
-// 	q := db.Paginate(numberPage, 10)
-// 	booking := []models.Booking{}
-// 	err = q.Where("applicant_id = (?)", tokens["UserID"]).Order(order).All(&booking)
-// 	bookings := []models.Booking{}
-// 	for _, value := range booking {
-// 		user, err := GetUserByIduuid(c, value.ApplicantID)
-// 		if err != nil {
-// 			return nil, err
-// 		}
-// 		value.Applicant = user.(models.User)
-// 		sign, err := GetSignById(c, value.SignID)
-// 		if err != nil {
-// 			return nil, err
-// 		}
-// 		value.Sign = sign.(models.Sign)
-// 		bookings = append(bookings, value)
-// 	}
-// 	bookingJson := models.Page{numberPage, bookings, q.Paginator.TotalPages}
-// 	return &bookingJson, nil
-
-// }
