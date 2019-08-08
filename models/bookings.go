@@ -49,15 +49,6 @@ type Page struct {
 	TotalPage  int
 }
 
-func (b *Booking) ReturnJsonID() IDbooking {
-	idbook := IDbooking{b.ID}
-	return idbook
-}
-
-type IDbooking struct {
-	ID int `json:"id"`
-}
-
 type Bookings []Booking
 
 type BookingDays []BookingDay

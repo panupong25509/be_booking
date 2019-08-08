@@ -25,7 +25,6 @@ func Register(c echo.Context) error {
 }
 
 func GetUserByUsername(c echo.Context) error {
-	data := DynamicPostForm(c)
 	success, err := repositories.GetUserByUsername(c)
 	if err != nil {
 		status := err.(models.Error)
