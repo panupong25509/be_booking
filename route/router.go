@@ -23,7 +23,7 @@ func Init() *echo.Echo {
 	// e.GET("/sign/{id}", api.GetSignById)
 	//Booking
 	e.POST("/addbooking", api.AddBooking)
-	e.GET("/getbookingdays/{id}", api.GetBookingDayBySign)
+	e.GET("/getbookingdays/:id", api.GetBookingDayBySign)
 	//admin
 	e.GET("/admin/booking", api.GetPaginateAdmin)
 	e.POST("/admin/booking/approve", api.ApproveBooking)

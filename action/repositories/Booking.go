@@ -81,11 +81,7 @@ func GetBookingDaysBySign(c echo.Context) (interface{}, interface{}) {
 	db := db.DbManager()
 	bookings := models.Bookings{}
 	bookingdate := time.Now().Format("2006-01-02")
-	signid, _ := strconv.Atoi(c.Param("id"))
-	err := db.Where("( last_date >= (?) or first_date >= (?) ) and sign_id = (?)", bookingdate, bookingdate, signid).Find(&bookings)
-	if err != nil {
-		return nil, models.Error{400, "DB"}
-	}
+	db.Where("( last_date >= (?) or first_date >= (?) ) and sign_id = (?)", bookingdate, bookingdate, c.Param("id")).Find(&bookings)
 	days := models.BookingDays{}
 	for _, value := range bookings {
 		days = append(days, models.BookingDay{value.FirstDate, value.LastDate})
