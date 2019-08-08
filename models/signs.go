@@ -23,6 +23,10 @@ type Sign struct {
 	UpdatedAt     time.Time `json:"-" db:"updated_at"`
 }
 
+type Signs struct {
+	Signs []Sign `json:"signs"`
+}
+
 func (s *Sign) CheckParamPostForm(c echo.Context) bool {
 	if c.FormValue("signname") == "" {
 		return false
