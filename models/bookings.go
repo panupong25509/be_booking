@@ -4,6 +4,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/labstack/echo"
+
 	"github.com/gofrs/uuid"
 )
 
@@ -47,32 +49,41 @@ type Page struct {
 	TotalPage  int
 }
 
+func (b *Booking) ReturnJsonID() IDbooking {
+	idbook := IDbooking{b.ID}
+	return idbook
+}
+
+type IDbooking struct {
+	ID int `json:"id"`
+}
+
 type Bookings []Booking
 
 type BookingDays []BookingDay
 
-func (b *Booking) CreateModel(data map[string]interface{}, code string) bool {
-	if data["applicant_id"] == nil {
+func (b *Booking) CreateModel(c echo.Context, code string) bool {
+	if c.FormValue("applicant_id") == "" {
 		return false
 	}
-	if data["sign_id"] == nil {
+	if c.FormValue("sign_id") == "" {
 		return false
 	}
-	if data["description"] == nil {
+	if c.FormValue("description") == "" {
 		return false
 	}
-	if data["first_date"] == nil {
+	if c.FormValue("first_date") == "" {
 		return false
 	}
-	if data["last_date"] == nil {
+	if c.FormValue("last_date") == "" {
 		return false
 	}
 	b.Code = code
-	b.ApplicantID, _ = uuid.FromString(data["applicant_id"].(string))
-	b.SignID, _ = strconv.Atoi(data["sign_id"].(string))
-	b.Description = data["description"].(string)
-	b.FirstDate, _ = time.Parse("2006-01-02", data["first_date"].(string))
-	b.LastDate, _ = time.Parse("2006-01-02", data["last_date"].(string))
+	b.ApplicantID, _ = uuid.FromString(c.FormValue("applicant_id"))
+	b.SignID, _ = strconv.Atoi(c.FormValue("sign_id"))
+	b.Description = c.FormValue("description")
+	b.FirstDate, _ = time.Parse("2006-01-02", c.FormValue("first_date"))
+	b.LastDate, _ = time.Parse("2006-01-02", c.FormValue("last_date"))
 	b.Status = "pending"
 	b.Comment = ""
 	return true
