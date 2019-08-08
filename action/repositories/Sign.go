@@ -61,7 +61,6 @@ func DeleteSign(c echo.Context) (interface{}, interface{}) {
 	db := db.DbManager()
 	sign := models.Sign{}
 	db.Find(&sign, c.FormValue("id"))
-	log.Print(sign)
 	os.Remove(`D:\fe_booking_sign\public\img\` + sign.Picture)
 	_ = db.Delete(&sign)
 	return models.Success{200, "success"}, nil

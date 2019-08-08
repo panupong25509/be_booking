@@ -15,7 +15,7 @@ func (b Booking) TableName() string {
 
 type Booking struct {
 	ID          int       `json:"id" db:"id"`
-	Code        string    `json:"booking_code" db:"booking_code"`
+	Code        string    `json:"booking_code" db:"code"`
 	ApplicantID uuid.UUID `json:"applicant_id" db:"applicant_id" fk_id:"id"`
 	SignID      int       `json:"sign_id" db:"sign_id" fk_id:"id"`
 	Description string    `json:"description" db:"description"`

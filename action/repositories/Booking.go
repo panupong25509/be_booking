@@ -34,10 +34,8 @@ func AddBooking(c echo.Context) (interface{}, interface{}) {
 	if !validate {
 		return nil, models.Error{400, "Busy date"}
 	}
-	err = db.Create(&newBooking)
-	if err != nil {
-		return nil, models.Error{500, "Can't Create to Database"}
-	}
+	db.NewRecord(newBooking)
+	db.Create(&newBooking)
 	return newBooking, nil
 }
 
