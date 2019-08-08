@@ -3,6 +3,8 @@ package models
 import (
 	"time"
 
+	"github.com/labstack/echo"
+
 	"github.com/gofrs/uuid"
 )
 
@@ -25,39 +27,39 @@ type User struct {
 
 type Users []User
 
-func (u *User) CheckParams(data map[string]interface{}) bool {
-	if data["username"] == nil {
+func (u *User) CheckParams(c echo.Context) bool {
+	if c.FormValue("username") == "" {
 		return false
 	}
-	if data["password"] == nil {
+	if c.FormValue("password") == "" {
 		return false
 	}
-	if data["fname"] == nil {
+	if c.FormValue("fname") == "" {
 		return false
 	}
-	if data["lname"] == nil {
+	if c.FormValue("lname") == "" {
 		return false
 	}
-	if data["organization"] == nil {
+	if c.FormValue("organization") == "" {
 		return false
 	}
-	if data["email"] == nil {
+	if c.FormValue("email") == "" {
 		return false
 	}
-	if data["role"] == nil {
+	if c.FormValue("role") == "" {
 		return false
 	}
 	return true
 }
 
-func (u *User) CreateModel(data map[string]interface{}, password string) bool {
+func (u *User) CreateModel(c echo.Context, password string) bool {
 	u.ID, _ = uuid.NewV4()
-	u.Username = data["username"].(string)
+	u.Username = c.FormValue("username")
 	u.Password = password
-	u.Fname = data["fname"].(string)
-	u.Lname = data["lname"].(string)
-	u.Organization = data["organization"].(string)
-	u.Email = data["email"].(string)
-	u.Role = data["role"].(string)
+	u.Fname = c.FormValue("fname")
+	u.Lname = c.FormValue("lname")
+	u.Organization = c.FormValue("organization")
+	u.Email = c.FormValue("email")
+	u.Role = c.FormValue("role")
 	return true
 }

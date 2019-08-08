@@ -7,8 +7,7 @@ import (
 )
 
 func Login(c echo.Context) error {
-	data := DynamicPostForm(c)
-	jwt, err := repositories.Login(c, data)
+	jwt, err := repositories.Login(c)
 	if err != nil {
 		status := err.(models.Error)
 		return c.JSON(status.Code, status.Message)
@@ -17,8 +16,7 @@ func Login(c echo.Context) error {
 }
 
 func Register(c echo.Context) error {
-	data := DynamicPostForm(c)
-	success, err := repositories.Register(c, data)
+	success, err := repositories.Register(c)
 	if err != nil {
 		status := err.(models.Error)
 		return c.JSON(status.Code, status)
@@ -28,7 +26,7 @@ func Register(c echo.Context) error {
 
 func GetUserByUsername(c echo.Context) error {
 	data := DynamicPostForm(c)
-	success, err := repositories.GetUserByUsername(c, data)
+	success, err := repositories.GetUserByUsername(c)
 	if err != nil {
 		status := err.(models.Error)
 		return c.JSON(status.Code, status)

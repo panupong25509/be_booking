@@ -12,27 +12,27 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func Register(c echo.Context, data map[string]interface{}) (interface{}, interface{}) {
+func Register(c echo.Context) (interface{}, interface{}) {
 	db := db.DbManager()
 	user := models.User{}
-	if !user.CheckParams(data) {
+	if !user.CheckParams(c) {
 		return nil, models.Error{400, "กรอกข้อมูลไม่ครบ"}
 	}
-	_, err := GetUserByUsername(c, data)
+	_, err := GetUserByUsername(c)
 	if err == nil {
 		return nil, models.Error{500, "Username นี้มีผู้ใช้แล้ว"}
 	}
-	hash, err := bcrypt.GenerateFromPassword([]byte(data["password"].(string)), bcrypt.DefaultCost)
+	hash, err := bcrypt.GenerateFromPassword([]byte(c.FormValue("password")), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
 	}
-	_ = user.CreateModel(data, string(hash))
+	_ = user.CreateModel(c, string(hash))
 	db.NewRecord(user)
 	db.Create(&user)
 	return models.Success{200, "success"}, nil
 }
 
-func Login(c echo.Context, data map[string]interface{}) (interface{}, interface{}) {
+func Login(c echo.Context) (interface{}, interface{}) {
 	db := db.DbManager()
 	username := c.FormValue("username")
 	password := c.FormValue("password")
@@ -66,12 +66,12 @@ func CheckPasswordHash(password, hash string) bool {
 	return err == nil
 }
 
-func GetUserByUsername(c echo.Context, data map[string]interface{}) (interface{}, interface{}) {
+func GetUserByUsername(c echo.Context) (interface{}, interface{}) {
 	db := db.DbManager()
-	if data["username"] == nil {
+	if c.FormValue("username") == "" {
 		return nil, models.Error{400, "ไม่มี username"}
 	}
-	username := data["username"].(string)
+	username := c.FormValue("username")
 	user := models.Users{}
 	db.Where("username = (?)", username).First(&user)
 	if len(user) == 0 {
