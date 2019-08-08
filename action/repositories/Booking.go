@@ -207,7 +207,7 @@ func GetPaginateAdmin(c echo.Context) (interface{}, interface{}) {
 	}
 	booking := []models.Booking{}
 	db.Where("status = 'pending'").Find(&booking)
-	postsPerPage := 5
+	postsPerPage := 3
 	pagestring, _ := strconv.Atoi(c.Param("page"))
 	pageint := pagestring - 1
 	paginator = pagination.NewPaginator(c.Request(), postsPerPage, len(booking))
@@ -229,7 +229,12 @@ func GetPaginateAdmin(c echo.Context) (interface{}, interface{}) {
 			Bookings = append(Bookings, myuser)
 		}
 	}
-	return Bookings, nil
+	allpage := int((len(booking) / postsPerPage))
+	if len(booking)%postsPerPage != 0 {
+		allpage++
+	}
+	Pagination := models.Paginator{int(allpage), Bookings}
+	return Pagination, nil
 }
 
 func GetPaginateUser(c echo.Context) (interface{}, interface{}) {
@@ -266,7 +271,12 @@ func GetPaginateUser(c echo.Context) (interface{}, interface{}) {
 			Bookings = append(Bookings, myuser)
 		}
 	}
-	return Bookings, nil
+	allpage := int((len(booking) / postsPerPage))
+	if len(booking)%postsPerPage != 0 {
+		allpage++
+	}
+	Pagination := models.Paginator{int(allpage), Bookings}
+	return Pagination, nil
 }
 
 // func GetPaginateUser(page string, order string, c echo.Context) (interface{}, interface{}) {

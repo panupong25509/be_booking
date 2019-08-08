@@ -13,6 +13,11 @@ func (b Booking) TableName() string {
 	return "bookings"
 }
 
+type Paginator struct {
+	Allpage  int       `json:"allpage"`
+	Bookings []Booking `json:"bookings"`
+}
+
 type Booking struct {
 	ID          int       `json:"id" db:"id"`
 	Code        string    `json:"booking_code" db:"code"`
