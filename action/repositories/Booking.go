@@ -406,10 +406,9 @@ type Summarys struct {
 	AllPage  int       `json:"allpage"`
 }
 
-func QuerySummary(c echo.Context, groupby string) (interface{}, interface{}) {
+func QuerySummary(c echo.Context, selectSQL, groupby, order string) (interface{}, interface{}) {
 	db := db.DbManager()
 	summarys := []Summary{}
-	selectSQL := "extract(month from bookings.created_at) as month,signs.name as sign,  users.organization as organization, count(organization) as total"
 	joinUser := "join users on bookings.applicant_id = users.id"
 	joinSign := "join signs on bookings.sign_id = signs.id"
 	whereMonth := "extract(month from bookings.created_at) = " + c.Param("month")
@@ -424,7 +423,7 @@ func QuerySummary(c echo.Context, groupby string) (interface{}, interface{}) {
 	if c.Param("organization") == "null" {
 		whereOrganization = "users.organization NOT LIKE (?)"
 	}
-	db.Table("bookings").Select(selectSQL).Joins(joinUser).Joins(joinSign).Where(whereMonth).Where(whereSign, c.Param("sign")).Where(whereOrganization, c.Param("organization")).Group(groupby).Scan(&summarys)
+	db.Table("bookings").Select(selectSQL).Joins(joinUser).Joins(joinSign).Where(whereMonth).Where(whereSign, c.Param("sign")).Where(whereOrganization, c.Param("organization")).Group(groupby).Order(order).Scan(&summarys)
 	total := 0
 	for _, value := range summarys {
 		total = total + value.Total
@@ -437,14 +436,24 @@ func QuerySummary(c echo.Context, groupby string) (interface{}, interface{}) {
 	return Paginator, nil
 }
 
-func GetSummary(c echo.Context) (interface{}, interface{}) {
+func GetSummaryMonth(c echo.Context) (interface{}, interface{}) {
+	selectSQL := "extract(month from bookings.created_at) as month,signs.name as sign,  users.organization as organization, count(organization) as total"
 	groupby := "month,sign, organization"
-	Paginator, _ := QuerySummary(c, groupby)
+	order := "month"
+	Paginator, _ := QuerySummary(c, selectSQL, groupby, order)
 	return Paginator, nil
 }
-
-// func GetSummarySign(c echo.Context) (interface{}, interface{}) {
-// 	groupby := "sign,month, organization"
-// 	Paginator, _ := QuerySummary(c, groupby)
-// 	return Paginator, nil
-// }
+func GetSummarySign(c echo.Context) (interface{}, interface{}) {
+	selectSQL := "extract(month from bookings.created_at) as month,signs.name as sign,  users.organization as organization, count(organization) as total"
+	groupby := "sign,month, organization"
+	order := "sign"
+	Paginator, _ := QuerySummary(c, selectSQL, groupby, order)
+	return Paginator, nil
+}
+func GetSummaryOrganization(c echo.Context) (interface{}, interface{}) {
+	selectSQL := "extract(month from bookings.created_at) as month,signs.name as sign,  users.organization as organization, count(signs.name) as total"
+	groupby := "organization, month,sign"
+	order := "organization"
+	Paginator, _ := QuerySummary(c, selectSQL, groupby, order)
+	return Paginator, nil
+}
