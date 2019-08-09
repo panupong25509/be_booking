@@ -373,6 +373,8 @@ func GetBookingByFilter(c echo.Context) (interface{}, interface{}) {
 	}
 	return Paginator, nil
 }
+
+//summary
 func PaginatorSummary(c echo.Context, page, count int, summarys []Summary, total int) (interface{}, interface{}) {
 	pageint := page - 1
 	paginator = pagination.NewPaginator(c.Request(), count, len(summarys))
@@ -404,7 +406,7 @@ type Summarys struct {
 	AllPage  int       `json:"allpage"`
 }
 
-func GetSummaryMonth(c echo.Context) (interface{}, interface{}) {
+func QuerySummary(c echo.Context, groupby string) (interface{}, interface{}) {
 	db := db.DbManager()
 	summarys := []Summary{}
 	selectSQL := "extract(month from bookings.created_at) as month,signs.name as sign,  users.organization as organization, count(organization) as total"
@@ -422,8 +424,6 @@ func GetSummaryMonth(c echo.Context) (interface{}, interface{}) {
 	if c.Param("organization") == "null" {
 		whereOrganization = "users.organization NOT LIKE (?)"
 	}
-	log.Print(whereSign)
-	groupby := "month,sign, organization"
 	db.Table("bookings").Select(selectSQL).Joins(joinUser).Joins(joinSign).Where(whereMonth).Where(whereSign, c.Param("sign")).Where(whereOrganization, c.Param("organization")).Group(groupby).Scan(&summarys)
 	total := 0
 	for _, value := range summarys {
@@ -437,4 +437,14 @@ func GetSummaryMonth(c echo.Context) (interface{}, interface{}) {
 	return Paginator, nil
 }
 
-// func QuerySummary(selectSQL)
+func GetSummary(c echo.Context) (interface{}, interface{}) {
+	groupby := "month,sign, organization"
+	Paginator, _ := QuerySummary(c, groupby)
+	return Paginator, nil
+}
+
+// func GetSummarySign(c echo.Context) (interface{}, interface{}) {
+// 	groupby := "sign,month, organization"
+// 	Paginator, _ := QuerySummary(c, groupby)
+// 	return Paginator, nil
+// }

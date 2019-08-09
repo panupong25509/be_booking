@@ -90,11 +90,20 @@ func GetBookingByFilter(c echo.Context) error {
 	return c.JSON(200, booking)
 }
 
-func GetSummaryMonth(c echo.Context) error {
-	summary, err := repositories.GetSummaryMonth(c)
+func GetSummary(c echo.Context) error {
+	summary, err := repositories.GetSummary(c)
 	if err != nil {
 		status := err.(models.Error)
 		return c.JSON(status.Code, status)
 	}
 	return c.JSON(200, summary)
 }
+
+// func GetSummarySign(c echo.Context) error {
+// 	summary, err := repositories.GetSummarySign(c)
+// 	if err != nil {
+// 		status := err.(models.Error)
+// 		return c.JSON(status.Code, status)
+// 	}
+// 	return c.JSON(200, summary)
+// }
