@@ -43,7 +43,7 @@ func GetAllSign(c echo.Context) (interface{}, interface{}) {
 func GetSignByID(c echo.Context) (interface{}, interface{}) {
 	db := db.DbManager()
 	sign := models.Sign{}
-	db.First(&sign, c.FormValue("id"))
+	db.First(&sign, c.FormValue("sign_id"))
 	return sign, nil
 }
 

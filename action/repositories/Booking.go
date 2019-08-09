@@ -19,6 +19,7 @@ import (
 func AddBooking(c echo.Context) (interface{}, interface{}) {
 	db := db.DbManager()
 	sign, err := GetSignByID(c)
+	log.Print(sign)
 	if err != nil {
 		return nil, err
 	}
@@ -117,9 +118,19 @@ func GetBookingDaysBySign(c echo.Context) (interface{}, interface{}) {
 
 func GetBookingById(c echo.Context) (interface{}, interface{}) {
 	db := db.DbManager()
-	bookings := models.Bookings{}
-	db.First(&bookings, c.Param("id"))
-	return &bookings, nil
+	Booking := []models.Booking{}
+	db.First(&Booking, c.Param("id"))
+	user, err := GetUserByIduuid(c, Booking[0].ApplicantID)
+	if err != nil {
+		return nil, err
+	}
+	Booking[0].Applicant = user.(models.User)
+	sign, err := GetSignByIDForPage(Booking[0].SignID)
+	if err != nil {
+		return nil, err
+	}
+	Booking[0].Sign = sign.(models.Sign)
+	return &Booking, nil
 }
 
 func RejectBooking(c echo.Context) (interface{}, interface{}) {
@@ -274,7 +285,7 @@ func GetBookingAdmin(c echo.Context) (interface{}, interface{}) {
 
 	bookingsThisYear := GetAllBookingThisYear()
 	page, _ := strconv.Atoi(c.Param("page"))
-	Pagination, err := Paginator(c, len(booking), len(bookingsThisYear), page, 5, booking)
+	Pagination, err := Paginator(c, len(booking), len(bookingsThisYear), page, 10, booking)
 	if err != nil {
 		return nil, err
 	}
@@ -295,7 +306,7 @@ func GetBookingUser(c echo.Context) (interface{}, interface{}) {
 	db.Order(c.Param("order")).Where("applicant_id = (?)", tokens["UserID"]).Find(&booking)
 
 	page, _ := strconv.Atoi(c.Param("page"))
-	Pagination, err := Paginator(c, 0, 0, page, 5, booking)
+	Pagination, err := Paginator(c, 0, 0, page, 10, booking)
 	if err != nil {
 		return nil, err
 	}
