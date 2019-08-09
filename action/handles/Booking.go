@@ -81,13 +81,20 @@ func GetBookingUser(c echo.Context) error {
 	return c.JSON(200, booking)
 }
 
-// func GetPaginateUser(c echo.Context) error {
-// 	page := c.Param("page")
-// 	order := c.Param("order")
-// 	allBooking, err := repositories.GetPaginateUser(page, order, c)
-// 	if err != nil {
-// 		status := err.(models.Error)
-// 		return c.JSON(status.Code, status)
-// 	}
-// 	return c.JSON(200, allBooking)
-// }
+func GetBookingByFilter(c echo.Context) error {
+	booking, err := repositories.GetBookingByFilter(c)
+	if err != nil {
+		status := err.(models.Error)
+		return c.JSON(status.Code, status)
+	}
+	return c.JSON(200, booking)
+}
+
+func GetSummaryMonth(c echo.Context) error {
+	summary, err := repositories.GetSummaryMonth(c)
+	if err != nil {
+		status := err.(models.Error)
+		return c.JSON(status.Code, status)
+	}
+	return c.JSON(200, summary)
+}

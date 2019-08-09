@@ -312,3 +312,98 @@ func GetBookingUser(c echo.Context) (interface{}, interface{}) {
 	}
 	return Pagination, nil
 }
+
+func GetBookingByFilter(c echo.Context) (interface{}, interface{}) {
+	bookings := []models.Booking{}
+	db := db.DbManager()
+	db = db.Find(&bookings)
+	log.Print(c.Param("month"))
+	log.Print(c.Param("year"))
+	log.Print(c.Param("signid"))
+	log.Print(c.Param("organization"))
+	if c.Param("month") != "null" {
+		db = db.Where("extract(month from created_at) = (?)", c.Param("month")).Find(&bookings)
+	}
+	if c.Param("year") != "null" {
+		db = db.Where("extract(year from created_at) = (?)", c.Param("year")).Find(&bookings)
+	}
+	if c.Param("signid") != "null" {
+		db = db.Where("sign_id = (?)", c.Param("signid")).Find(&bookings)
+	}
+	bookingsOrganization := []models.Booking{}
+	if c.Param("organization") != "null" {
+		for index, booking := range bookings {
+			log.Print(index, booking)
+			userInterface, err := GetUserByIduuid(c, booking.ApplicantID)
+			if err != nil {
+				return nil, err
+			}
+			user := userInterface.(models.User)
+			if user.Organization == c.Param("organization") {
+				booking.Applicant = user
+				sign, err := GetSignByIDForPage(booking.SignID)
+				if err != nil {
+					return nil, err
+				}
+				booking.Sign = sign.(models.Sign)
+				bookingsOrganization = append(bookingsOrganization, booking)
+			}
+		}
+	} else {
+		for index, booking := range bookings {
+			log.Print(index, booking)
+			userInterface, err := GetUserByIduuid(c, booking.ApplicantID)
+			if err != nil {
+				return nil, err
+			}
+			user := userInterface.(models.User)
+			booking.Applicant = user
+			sign, err := GetSignByIDForPage(booking.SignID)
+			if err != nil {
+				return nil, err
+			}
+			booking.Sign = sign.(models.Sign)
+			bookingsOrganization = append(bookingsOrganization, booking)
+		}
+	}
+	pagenumber, _ := strconv.Atoi(c.Param("page"))
+	Paginator, err := Paginator(c, 0, 0, pagenumber, 5, bookingsOrganization)
+	if err != nil {
+		return nil, err
+	}
+	return Paginator, nil
+}
+func GetSummaryMonth(c echo.Context) (interface{}, interface{}) {
+	type Summary struct {
+		Month        float64
+		Sign         string
+		Organization string
+		Total        int
+	}
+	type Summarys struct {
+		Summarys []Summary `json:"summarys"`
+		Total    int       `json:"total"`
+	}
+	db := db.DbManager()
+	summarys := Summarys{}
+	selectSQL := "extract(month from bookings.created_at) as month,signs.name as sign,  users.organization as organization, count(organization) as total"
+	joinUser := "join users on bookings.applicant_id = users.id"
+	joinSign := "join signs on bookings.sign_id = signs.id"
+	whereMonth := `extract(month from bookings.created_at) = ` + c.Param("month")
+	log.Print(whereMonth)
+	whereSign := "signs.name = (?)"
+	if c.Param("sign") == "null" {
+		whereSign = "signs.name NOT LIKE (?)"
+	}
+	whereOrganization := "users.organization = (?)"
+	if c.Param("organization") == "null" {
+		whereOrganization = "users.organization NOT LIKE (?)"
+	}
+	log.Print(whereSign)
+	groupby := "month,sign, organization"
+	db.Table("bookings").Select(selectSQL).Joins(joinUser).Joins(joinSign).Where(whereMonth).Where(whereSign, c.Param("sign")).Where(whereOrganization, c.Param("organization")).Group(groupby).Scan(&summarys.Summarys)
+	for _, value := range summarys.Summarys {
+		summarys.Total = summarys.Total + value.Total
+	}
+	return summarys, nil
+}

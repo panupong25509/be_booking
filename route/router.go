@@ -30,6 +30,9 @@ func Init() *echo.Echo {
 	e.GET("/admin/booking/:page", api.GetBookingAdmin)
 	e.POST("/admin/booking/approve", api.ApproveBooking)
 	e.POST("/admin/booking/reject", api.RejectBooking)
+	e.GET("/admin/booking/:month/:year/:signid/:organization/:page", api.GetBookingByFilter)
+	//SUMMARY
+	e.GET("admin/summary/month/:month/:sign/:organization", api.GetSummaryMonth)
 
 	return e
 }

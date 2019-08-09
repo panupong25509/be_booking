@@ -59,6 +59,10 @@ type Page struct {
 
 type Bookings []Booking
 
+type BookingsReturn struct {
+	Bookings Bookings `json:"bookings"`
+}
+
 type BookingDays []BookingDay
 
 func (b *Booking) CreateModel(c echo.Context, code string) bool {
