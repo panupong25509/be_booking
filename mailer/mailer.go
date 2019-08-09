@@ -42,15 +42,12 @@ func SendEmail(Subject string, email string, status string, comment string) {
 	m := gomail.NewMessage()
 	m.SetHeader("From", config.GetConfig().MAIL_EMAIL)
 	m.SetHeader("To", email)
-	// m.SetAddressHeader("Cc", "dan@example.com", "Dan")
 	m.SetHeader("Subject", Subject)
 	html := HTML(status, "booking", comment)
 	m.SetBody("text/html", html)
-	// m.Attach("/home/Alex/lolcat.jpg")
 
 	d := gomail.NewDialer("smtp.gmail.com", 587, config.GetConfig().MAIL_EMAIL, config.GetConfig().MAIL_PASSWORD)
 	log.Print(config.GetConfig().MAIL_EMAIL)
-	// Send the email to Bob, Cora and Dan.
 	if err := d.DialAndSend(m); err != nil {
 		panic(err)
 	}

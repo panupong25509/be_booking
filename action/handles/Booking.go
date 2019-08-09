@@ -16,17 +16,6 @@ func AddBooking(c echo.Context) error {
 	return c.JSON(200, booking.ReturnJsonID())
 }
 
-// func DeleteBooking(c echo.Context) error {
-// 	data := DynamicPostForm(c)
-
-// 	deleteBooking, err := repositories.DeleteBooking(c, data)
-// 	if err != nil {
-// 		status := err.(models.Error)
-// 		return c.Render(status.Code, r.JSON(status))
-// 	}
-// 	return c.Render(200, r.JSON(deleteBooking))
-// }
-
 func GetBookingById(c echo.Context) error {
 	days, err := repositories.GetBookingById(c)
 	if err != nil {
@@ -65,10 +54,6 @@ func RejectBooking(c echo.Context) error {
 
 func GetBookingAdmin(c echo.Context) error {
 	booking, _ := repositories.GetBookingAdmin(c)
-	// if err != nil {
-	// 	status := err.(models.Error)
-	// 	return c.JSON(status.Code, status)
-	// }
 	return c.JSON(200, booking)
 }
 

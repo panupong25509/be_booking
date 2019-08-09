@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"io"
-	"log"
 	"os"
 	"strconv"
 	"time"
@@ -19,7 +18,6 @@ import (
 func AddBooking(c echo.Context) (interface{}, interface{}) {
 	db := db.DbManager()
 	sign, err := GetSignByID(c)
-	log.Print(sign)
 	if err != nil {
 		return nil, err
 	}
@@ -193,32 +191,10 @@ func ApproveBooking(c echo.Context) (interface{}, interface{}) {
 	return models.Success{200, "Approve success"}, nil
 }
 
-// func DeleteBooking(c echo.Context) (interface{}, interface{}) {
-// 	db, err := ConnectDB(c)
-// 	if err != nil {
-// 		return nil, models.Error{500, "Can't connect Database"}
-// 	}
-// 	data := DynamicPostForm(c)
-// 	booking := models.Booking{}
-// 	id, _ := strconv.Atoi(data["id"].(string))
-// 	err = db.Find(&booking, id)
-// 	if err != nil {
-// 		return nil, models.Error{500, "Data มีปัญหาไม่สามารถยกเลิกได้"}
-// 	}
-// 	_ = db.Destroy(&booking)
-// 	return Success(nil), nil
-// }
-
-// func SendMail(c echo.Context) (interface{}, interface{}) {
-// 	mailers.SendWelcomeEmails(c.Response(), "Test", "panupong.jkn@gmail.com", true)
-// 	return nil, nil
-// }
-
 func GetAllBookingThisYear() models.Bookings {
 	db := db.DbManager()
 	bookings := models.Bookings{}
 	db.Where("extract(year from created_at) = (?)", time.Now().Year()).Find(&bookings)
-	log.Print(bookings)
 	return bookings
 }
 
@@ -317,10 +293,6 @@ func GetBookingByFilter(c echo.Context) (interface{}, interface{}) {
 	bookings := []models.Booking{}
 	db := db.DbManager()
 	db = db.Find(&bookings)
-	log.Print(c.Param("month"))
-	log.Print(c.Param("year"))
-	log.Print(c.Param("signid"))
-	log.Print(c.Param("organization"))
 	if c.Param("month") != "null" {
 		db = db.Where("extract(month from created_at) = (?)", c.Param("month")).Find(&bookings)
 	}
@@ -332,8 +304,7 @@ func GetBookingByFilter(c echo.Context) (interface{}, interface{}) {
 	}
 	bookingsOrganization := []models.Booking{}
 	if c.Param("organization") != "null" {
-		for index, booking := range bookings {
-			log.Print(index, booking)
+		for _, booking := range bookings {
 			userInterface, err := GetUserByIduuid(c, booking.ApplicantID)
 			if err != nil {
 				return nil, err
@@ -350,8 +321,7 @@ func GetBookingByFilter(c echo.Context) (interface{}, interface{}) {
 			}
 		}
 	} else {
-		for index, booking := range bookings {
-			log.Print(index, booking)
+		for _, booking := range bookings {
 			userInterface, err := GetUserByIduuid(c, booking.ApplicantID)
 			if err != nil {
 				return nil, err

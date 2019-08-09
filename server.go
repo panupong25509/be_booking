@@ -10,6 +10,5 @@ func main() {
 	db.Init()
 	e := route.Init()
 	e.Use(middleware.CORS())
-
 	e.Logger.Fatal(e.Start(":3001"))
 }
