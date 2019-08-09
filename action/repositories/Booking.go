@@ -305,6 +305,7 @@ func GetBookingUser(c echo.Context) (interface{}, interface{}) {
 func GetBookingByFilter(c echo.Context) (interface{}, interface{}) {
 	bookings := []models.Booking{}
 	db := db.DbManager()
+	db = db.Find(&bookings)
 	log.Print(c.Param("month"))
 	log.Print(c.Param("year"))
 	log.Print(c.Param("signid"))
@@ -354,5 +355,44 @@ func GetBookingByFilter(c echo.Context) (interface{}, interface{}) {
 			bookingsOrganization = append(bookingsOrganization, booking)
 		}
 	}
-	return bookingsOrganization, nil
+	pagenumber, _ := strconv.Atoi(c.Param("page"))
+	Paginator, err := Paginator(c, 0, 0, pagenumber, 5, bookingsOrganization)
+	if err != nil {
+		return nil, err
+	}
+	return Paginator, nil
+}
+func GetSummaryMonth(c echo.Context) (interface{}, interface{}) {
+	type Summary struct {
+		Month        float64
+		Sign         string
+		Organization string
+		Total        int
+	}
+	type Summarys struct {
+		Summarys []Summary `json:"summarys"`
+		Total    int       `json:"total"`
+	}
+	db := db.DbManager()
+	summarys := Summarys{}
+	selectSQL := "extract(month from bookings.created_at) as month,signs.name as sign,  users.organization as organization, count(organization) as total"
+	joinUser := "join users on bookings.applicant_id = users.id"
+	joinSign := "join signs on bookings.sign_id = signs.id"
+	whereMonth := `extract(month from bookings.created_at) = ` + c.Param("month")
+	log.Print(whereMonth)
+	whereSign := "signs.name = (?)"
+	if c.Param("sign") == "null" {
+		whereSign = "signs.name NOT LIKE (?)"
+	}
+	whereOrganization := "users.organization = (?)"
+	if c.Param("organization") == "null" {
+		whereOrganization = "users.organization NOT LIKE (?)"
+	}
+	log.Print(whereSign)
+	groupby := "month,sign, organization"
+	db.Table("bookings").Select(selectSQL).Joins(joinUser).Joins(joinSign).Where(whereMonth).Where(whereSign, c.Param("sign")).Where(whereOrganization, c.Param("organization")).Group(groupby).Scan(&summarys.Summarys)
+	for _, value := range summarys.Summarys {
+		summarys.Total = summarys.Total + value.Total
+	}
+	return summarys, nil
 }
