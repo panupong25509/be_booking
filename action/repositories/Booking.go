@@ -378,8 +378,10 @@ func GetSummaryMonth(c echo.Context) (interface{}, interface{}) {
 	selectSQL := "extract(month from bookings.created_at) as month,signs.name as sign,  users.organization as organization, count(organization) as total"
 	joinUser := "join users on bookings.applicant_id = users.id"
 	joinSign := "join signs on bookings.sign_id = signs.id"
-	whereMonth := `extract(month from bookings.created_at) = ` + c.Param("month")
-	log.Print(whereMonth)
+	whereMonth := "extract(month from bookings.created_at) = " + c.Param("month")
+	if c.Param("month") == "null" {
+		whereMonth = "extract(month from bookings.created_at) != 0"
+	}
 	whereSign := "signs.name = (?)"
 	if c.Param("sign") == "null" {
 		whereSign = "signs.name NOT LIKE (?)"
