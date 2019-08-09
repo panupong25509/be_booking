@@ -373,19 +373,40 @@ func GetBookingByFilter(c echo.Context) (interface{}, interface{}) {
 	}
 	return Paginator, nil
 }
+func PaginatorSummary(c echo.Context, page, count int, summarys []Summary, total int) (interface{}, interface{}) {
+	pageint := page - 1
+	paginator = pagination.NewPaginator(c.Request(), count, len(summarys))
+	idrange := NewSlice((pageint * count), count, 1)
+	newSummarys := []Summary{}
+	for _, num := range idrange {
+		if num <= len(summarys)-1 {
+			summary := summarys[num]
+			newSummarys = append(newSummarys, summary)
+		}
+	}
+	allpage := int((len(summarys) / count))
+	if len(summarys)%count != 0 {
+		allpage++
+	}
+	Pagination := Summarys{newSummarys, total, allpage}
+	return Pagination, nil
+}
+
+type Summary struct {
+	Month        float64
+	Sign         string
+	Organization string
+	Total        int
+}
+type Summarys struct {
+	Summarys []Summary `json:"summarys"`
+	Total    int       `json:"total"`
+	AllPage  int       `json:"allpage"`
+}
+
 func GetSummaryMonth(c echo.Context) (interface{}, interface{}) {
-	type Summary struct {
-		Month        float64
-		Sign         string
-		Organization string
-		Total        int
-	}
-	type Summarys struct {
-		Summarys []Summary `json:"summarys"`
-		Total    int       `json:"total"`
-	}
 	db := db.DbManager()
-	summarys := Summarys{}
+	summarys := []Summary{}
 	selectSQL := "extract(month from bookings.created_at) as month,signs.name as sign,  users.organization as organization, count(organization) as total"
 	joinUser := "join users on bookings.applicant_id = users.id"
 	joinSign := "join signs on bookings.sign_id = signs.id"
@@ -403,9 +424,17 @@ func GetSummaryMonth(c echo.Context) (interface{}, interface{}) {
 	}
 	log.Print(whereSign)
 	groupby := "month,sign, organization"
-	db.Table("bookings").Select(selectSQL).Joins(joinUser).Joins(joinSign).Where(whereMonth).Where(whereSign, c.Param("sign")).Where(whereOrganization, c.Param("organization")).Group(groupby).Scan(&summarys.Summarys)
-	for _, value := range summarys.Summarys {
-		summarys.Total = summarys.Total + value.Total
+	db.Table("bookings").Select(selectSQL).Joins(joinUser).Joins(joinSign).Where(whereMonth).Where(whereSign, c.Param("sign")).Where(whereOrganization, c.Param("organization")).Group(groupby).Scan(&summarys)
+	total := 0
+	for _, value := range summarys {
+		total = total + value.Total
 	}
-	return summarys, nil
+	pagenumber, _ := strconv.Atoi(c.Param("page"))
+	Paginator, err := PaginatorSummary(c, pagenumber, 10, summarys, total)
+	if err != nil {
+		return nil, err
+	}
+	return Paginator, nil
 }
+
+// func QuerySummary(selectSQL)
