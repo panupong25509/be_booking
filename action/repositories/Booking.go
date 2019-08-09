@@ -160,7 +160,7 @@ func RejectBooking(c echo.Context) (interface{}, interface{}) {
 	userInterface, err := GetUserByIduuid(c, booking.ApplicantID)
 	db.Save(&booking)
 	user, err := userInterface.(models.User)
-	go mailer.SendEmail("Your booking Rejected", user.Email, "reject")
+	go mailer.SendEmail("Your booking Rejected", user.Email, "reject", comment)
 	return models.Success{200, "reject success"}, nil
 }
 
@@ -189,7 +189,7 @@ func ApproveBooking(c echo.Context) (interface{}, interface{}) {
 	db.Save(&booking)
 	userInterface, err := GetUserByIduuid(c, booking.ApplicantID)
 	user, err := userInterface.(models.User)
-	go mailer.SendEmail("Your booking approved", user.Email, "approve")
+	go mailer.SendEmail("Your booking approved", user.Email, "approve", "")
 	return models.Success{200, "Approve success"}, nil
 }
 

@@ -8,7 +8,7 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
-func HTML(status, booking string) string {
+func HTML(status, booking string, comment string) string {
 	return `
 <html>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -23,7 +23,8 @@ func HTML(status, booking string) string {
         </div>
 
         <p>You can check status of ` + booking + ` on dashboard or click to button</p>
-        <a href="http://localhost:3001/">
+				<p>` + comment + `</p>
+				<a href="http://localhost:3001/">
           <button
             style="background-color: #f47836;color: white;border: none;padding: 8px 10px;border-radius: 8px;cursor: pointer;"
           >
@@ -37,13 +38,13 @@ func HTML(status, booking string) string {
 `
 }
 
-func SendEmail(Subject string, email string, status string) {
+func SendEmail(Subject string, email string, status string, comment string) {
 	m := gomail.NewMessage()
 	m.SetHeader("From", config.GetConfig().MAIL_EMAIL)
 	m.SetHeader("To", email)
 	// m.SetAddressHeader("Cc", "dan@example.com", "Dan")
 	m.SetHeader("Subject", Subject)
-	html := HTML(status, "booking")
+	html := HTML(status, "booking", comment)
 	m.SetBody("text/html", html)
 	// m.Attach("/home/Alex/lolcat.jpg")
 
